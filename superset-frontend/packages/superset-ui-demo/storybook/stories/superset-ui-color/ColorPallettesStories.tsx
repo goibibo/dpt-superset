@@ -26,6 +26,7 @@ import {
   CategoricalLyft,
   CategoricalPreset,
   CategoricalSuperset,
+  CategoricalCustom,
   SequentialCommon,
   SequentialD3,
 } from '@superset-ui/core';
@@ -44,6 +45,7 @@ export const categoricalPalettes = () =>
     { palettes: CategoricalGoogle, storyName: 'Google' },
     { palettes: CategoricalLyft, storyName: 'Lyft' },
     { palettes: CategoricalPreset, storyName: 'Preset' },
+    { palettes: CategoricalCustom, storyName: 'Custom' },
   ].map(({ palettes, storyName }) => (
     <RenderPalettes key={storyName} title={storyName} palettes={palettes} />
   ));

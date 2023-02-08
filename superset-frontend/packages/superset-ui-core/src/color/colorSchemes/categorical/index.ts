@@ -24,3 +24,4 @@ export { default as CategoricalGoogle } from './google';
 export { default as CategoricalLyft } from './lyft';
 export { default as CategoricalPreset } from './preset';
 export { default as CategoricalSuperset } from './superset';
+export { default as CategoricalCustom } from './custom';
