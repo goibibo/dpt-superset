@@ -172,7 +172,7 @@ const SliceHeader: FC<SliceHeaderProps> = ({
   const isCrossFiltersEnabled = useSelector<RootState, boolean>(
     ({ dashboardInfo }) => dashboardInfo.crossFiltersEnabled,
   );
-
+  const metricDetails = slice?.form_data?.custom_filters?.metricDetails;
   const indicator = useMemo(
     () => ({
       value: crossFilterValue,
@@ -260,6 +260,50 @@ const SliceHeader: FC<SliceHeaderProps> = ({
                 <CrossFilterIcon
                   onClick={() => dispatch(clearDataMask(slice?.slice_id))}
                 />
+              </Tooltip>
+            )}
+            {metricDetails && (
+              <Tooltip
+                placement="top"
+                title={
+                  <div>
+                    <div>
+                      <p>
+                        Metric_Description :{' '}
+                        {metricDetails?.metricDescription || ''}
+                      </p>
+                    </div>
+                    <br />
+                    <div>
+                      <p>Metric_ID : {metricDetails?.metricID || ''}</p>
+                    </div>
+                    <br />
+                    <div>
+                      <p>Metric_Name : {metricDetails?.metricName || ''}</p>
+                    </div>
+                    <br />
+                    <div>
+                      <p>
+                        Metric_Short_Name :{' '}
+                        {metricDetails?.metricShortName || ''}
+                      </p>
+                    </div>
+                    <br />
+                    <div>
+                      {metricDetails?.redirectionURL && (
+                        <a
+                          target="_blank"
+                          rel="noreferrer"
+                          href={metricDetails?.redirectionURL}
+                        >
+                          Go to Feature Store
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                }
+              >
+                <span style={{ cursor: 'help' }}>&#9432;</span>
               </Tooltip>
             )}
             {!uiConfig.hideChartControls && (

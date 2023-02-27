@@ -49,6 +49,7 @@ export type Chart = ChartState & {
   form_data: {
     viz_type: string;
     datasource: string;
+    variantSliceId?: string;
   };
 };
 
@@ -165,6 +166,8 @@ export type LayoutItem = {
     text?: string;
     uuid: string;
     width: number;
+    variantId?: string;
+    variantSliceId?: string;
   };
 };
 
