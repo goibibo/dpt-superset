@@ -173,30 +173,19 @@ class Chart extends React.PureComponent {
     } else {
       // .........custom_code: 1432 to assign response to respective dynamic variant charts
       // .........to revert remove if else and keep else scope data only
-      if(this.props.formData?.variantSliceId) {
-        const newChartKey = this.props.formData.variantSliceId;
-        console.log("🚀 ~ file: Chart.jsx ~ line 153 ~ Chart ~ runQuery ~ key----changed----to", newChartKey );
-        this.props.actions.postChartFormData(
-          this.props.formData,
-          this.props.force || getUrlParam(URL_PARAMS.force), // allow override via url params force=true
-          this.props.timeout,
-          newChartKey,
-          this.props.dashboardId,
-          this.props.ownState,
-        );
-        // .........custom_code_end: 1432
-      } else {
-      // Create chart with POST request
+      const chartId = this.props.formData?.variantSliceId
+        ? this.props.formData.variantSliceId
+        : this.props.chartId;
+      // .........custom_code_end: 1432
       this.props.actions.postChartFormData(
         this.props.formData,
         this.props.force || getUrlParam(URL_PARAMS.force), // allow override via url params force=true
         this.props.timeout,
-        this.props.chartId,
+        chartId,
         this.props.dashboardId,
         this.props.ownState,
       );
     }
-  }
   }
 
   handleRenderContainerFailure(error, info) {

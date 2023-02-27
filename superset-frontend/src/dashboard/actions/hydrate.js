@@ -474,7 +474,7 @@ export const hydrateDashboard =
     });
   };
 
-  export const hydrateExperimentDashboard =
+export const hydrateExperimentDashboard =
   ({
     history,
     dashboard,
@@ -565,7 +565,7 @@ export const hydrateDashboard =
           variantId: slice.variantId,
           variantSliceId: slice.variantSliceId,
           lice_url: slice.slice_url,
-          slice_name: slice.slice_name + '-' + slice.variantId,
+          slice_name: `${slice.slice_name}-${slice.variantId}`,
           form_data: slice.form_data,
           viz_type: slice.form_data.viz_type,
           datasource: slice.form_data.datasource,
@@ -677,8 +677,9 @@ export const hydrateDashboard =
         // functionality and python updates slice names based on layout upon dashboard save
         const layoutId = chartIdToLayoutId[sliceKey];
         if (layoutId && layout[layoutId]) {
-          layout[layoutId].meta.sliceName =
-            slice.slice_name + '-' + slice.variantId;
+          layout[
+            layoutId
+          ].meta.sliceName = `${slice.slice_name}-${slice.variantId}`;
           layout[layoutId].meta.sliceVariant = slice.variantId;
           layout[layoutId].meta.variantId = slice.variantId;
           layout[layoutId].meta.variantSliceId = slice.variantSliceId;

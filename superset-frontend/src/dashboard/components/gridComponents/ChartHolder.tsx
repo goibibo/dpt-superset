@@ -301,7 +301,7 @@ const ChartHolder: React.FC<ChartHolderProps> = ({
               </style>
             )}
             {isVariantChart ? (
-              <Chart
+              <ChartVariant
                 componentId={component.id}
                 id={component.meta.chartId}
                 dashboardId={dashboardId}

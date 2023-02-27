@@ -38,7 +38,10 @@ import {
   useDashboardCharts,
   useDashboardDatasets,
 } from 'src/hooks/apiResources';
-import { hydrateDashboard, hydrateExperimentDashboard } from 'src/dashboard/actions/hydrate';
+import {
+  hydrateDashboard,
+  hydrateExperimentDashboard,
+} from 'src/dashboard/actions/hydrate';
 import { setDatasources } from 'src/dashboard/actions/datasources';
 import injectCustomCss from 'src/dashboard/util/injectCustomCss';
 import setupPlugins from 'src/setup/setupPlugins';
@@ -58,7 +61,10 @@ import { URL_PARAMS } from 'src/constants';
 import { getUrlParam } from 'src/utils/urlUtils';
 import { canUserEditDashboard } from 'src/dashboard/util/permissionUtils';
 import { getFilterSets } from 'src/dashboard/actions/nativeFilters';
-import { setDatasetsStatus, addExperimentDetails } from 'src/dashboard/actions/dashboardState';
+import {
+  setDatasetsStatus,
+  addExperimentDetails,
+} from 'src/dashboard/actions/dashboardState';
 import {
   getFilterValue,
   getPermalinkValue,
@@ -69,7 +75,7 @@ import shortid from 'shortid';
 // ........custom_code: import action
 import { restructureComponent } from 'src/dashboard/actions/dashboardLayout';
 import extractUrlParams from '../util/extractUrlParams';
-import { dashboardResponse } from '../testResponse';
+// import { dashboardResponse } from '../testResponse';
 // ..........custom_code:end
 import { RootState } from '../types';
 import { getActiveFilters } from '../util/activeDashboardFilters';
@@ -343,7 +349,7 @@ export const DashboardPage: FC<PageProps> = ({ idOrSlug }: PageProps) => {
         // variantId: chartVariants,
         chartRequestMap: {},
       };
-      let metricResult = {};
+      // let metricResult = {};
       // .......custom_code_end: variables
 
       let dataMask = nativeFilterKeyValue || {};
@@ -506,7 +512,7 @@ export const DashboardPage: FC<PageProps> = ({ idOrSlug }: PageProps) => {
         // }
 
         dispatch(
-          hydrateDashboard({
+          hydrateExperimentDashboard({
             history,
             dashboard,
             charts,

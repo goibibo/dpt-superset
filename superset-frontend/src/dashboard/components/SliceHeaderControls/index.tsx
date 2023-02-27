@@ -121,6 +121,7 @@ export interface SliceHeaderControlsProps {
     slice_id: number;
     slice_description: string;
     datasource: string;
+    form_data?: any;
   };
 
   componentId: string;

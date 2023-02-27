@@ -54,10 +54,11 @@ function mapStateToProps(
   },
   ownProps,
 ) {
-  const { id, extraControls, setControlValue, variant, variantSliceId } = ownProps;
-    // .....custom_code:1432
-    const chart = chartQueries[variantSliceId] || EMPTY_OBJECT;
-    // .....custom_code_end:1432
+  const { id, extraControls, setControlValue, variant, variantSliceId } =
+    ownProps;
+  // .....custom_code:1432
+  const chart = chartQueries[variantSliceId] || EMPTY_OBJECT;
+  // .....custom_code_end:1432
   const datasource =
     (chart && chart.form_data && datasources[chart.form_data.datasource]) ||
     PLACEHOLDER_DATASOURCE;

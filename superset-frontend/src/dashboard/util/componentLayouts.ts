@@ -3,7 +3,7 @@ import {
   HEADER_TYPE,
   NEW_COMPONENT_SOURCE_TYPE,
   MARKDOWN_TYPE,
-} from "./componentTypes";
+} from './componentTypes';
 
 export const ComponentLayouts = {
   header: {
