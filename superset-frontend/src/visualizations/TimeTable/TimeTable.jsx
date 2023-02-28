@@ -236,7 +236,12 @@ const TimeTable = ({
         }
       }
 
-      const color = colorFromBounds(v, column.bounds);
+      // .........custom_code: PSN-1925 show color code table : ['#DC4C64','#14A44D']
+      const color = colorFromBounds(
+        v,
+        column.bounds,
+        column.boundColorCode ? ['#DC4C64', '#14A44D'] : undefined,
+      );
 
       return (
         <span

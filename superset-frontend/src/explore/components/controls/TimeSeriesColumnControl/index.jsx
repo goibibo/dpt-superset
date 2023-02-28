@@ -39,6 +39,7 @@ const propTypes = {
   showYAxis: PropTypes.bool,
   yAxisBounds: PropTypes.array,
   bounds: PropTypes.array,
+  boundColorCode: PropTypes.bool,
   d3format: PropTypes.string,
   dateFormat: PropTypes.string,
   onChange: PropTypes.func,
@@ -56,6 +57,7 @@ const defaultProps = {
   showYAxis: false,
   yAxisBounds: [null, null],
   bounds: [null, null],
+  boundColorCode: false,
   d3format: '',
   dateFormat: '',
 };
@@ -122,6 +124,7 @@ export default class TimeSeriesColumnControl extends React.Component {
       showYAxis: this.props.showYAxis,
       yAxisBounds: this.props.yAxisBounds,
       bounds: this.props.bounds,
+      boundColorCode: this.props.boundColorCode,
       d3format: this.props.d3format,
       dateFormat: this.props.dateFormat,
       popoverVisible: false,
@@ -313,6 +316,15 @@ export default class TimeSeriesColumnControl extends React.Component {
               onChange={this.onBoundsChange.bind(this)}
             />,
           )}
+        {this.formRow(
+          'Color Code',
+          'Check for red and green color bounds',
+          'boundColorCode',
+          <CheckboxControl
+            value={this.state.boundColorCode}
+            onChange={this.onCheckboxChange.bind(this, 'boundColorCode')}
+          />,
+        )}
         {this.formRow(
           t('Number format'),
           t('Optional d3 number format string'),
