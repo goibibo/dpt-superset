@@ -55,6 +55,10 @@ import { ResultsPaneOnDashboard } from 'src/explore/components/DataTablesPane';
 import Modal from 'src/components/Modal';
 import { DrillDetailMenuItems } from 'src/components/Chart/DrillDetail';
 import { LOG_ACTIONS_CHART_DOWNLOAD_AS_IMAGE } from 'src/logger/LogUtils';
+// .........custom_code:
+import { JsonEditor } from 'src/components/AsyncAceEditor';
+import jsonStringify from 'json-stringify-pretty-compact';
+// .........custom_code_end
 
 const MENU_KEYS = {
   CROSS_FILTER_SCOPING: 'cross_filter_scoping',
@@ -67,6 +71,7 @@ const MENU_KEYS = {
   TOGGLE_CHART_DESCRIPTION: 'toggle_chart_description',
   VIEW_QUERY: 'view_query',
   VIEW_RESULTS: 'view_results',
+  VIEW_JSON: 'view_JSON',
   DRILL_TO_DETAIL: 'drill_to_detail',
 };
 
@@ -348,6 +353,7 @@ class SliceHeaderControls extends React.PureComponent<
       supersetCanShare = false,
       isCached = [],
       crossFiltersEnabled,
+      formData,
     } = this.props;
     const crossFilterItems = getChartMetadataRegistry().items;
     const isTable = slice.viz_type === 'table';
@@ -357,6 +363,19 @@ class SliceHeaderControls extends React.PureComponent<
         value.behaviors?.includes(Behavior.INTERACTIVE_CHART),
       )
       .find(([key]) => key === slice.viz_type);
+    // ...........custom_code: PSN-1821 add popup info to show on every chart
+    const jsonFormData = jsonStringify({
+      adhoc_filters: formData.adhoc_filters,
+      // custom_filters: formData.custom_filters,
+      extra_filters: formData.extra_filters,
+      extraFormData: formData.extra_form_data,
+      date_filter: formData.date_filter,
+      groupby: formData.groupby,
+      metric: formData.metrics,
+      metricDetail: formData.metricDetails,
+      sort_by_metric: formData.sort_by_metric,
+    });
+    // ...........custom_code_end
 
     const cachedWhen = (cachedDttm || []).map(itemCachedDttm =>
       moment.utc(itemCachedDttm).fromNow(),
@@ -427,21 +446,50 @@ class SliceHeaderControls extends React.PureComponent<
         )}
 
         {this.props.supersetCanExplore && (
-          <Menu.Item key={MENU_KEYS.VIEW_QUERY}>
-            <ModalTrigger
-              triggerNode={
-                <span data-test="view-query-menu-item">{t('View query')}</span>
-              }
-              modalTitle={t('View query')}
-              modalBody={
-                <ViewQueryModal latestQueryFormData={this.props.formData} />
-              }
-              draggable
-              resizable
-              responsive
-            />
-          </Menu.Item>
+          <>
+            <Menu.Item key={MENU_KEYS.VIEW_QUERY}>
+              <ModalTrigger
+                triggerNode={
+                  <span data-test="view-query-menu-item">
+                    {t('View query')}
+                  </span>
+                }
+                modalTitle={t('View query')}
+                modalBody={
+                  <ViewQueryModal latestQueryFormData={this.props.formData} />
+                }
+                draggable
+                resizable
+                responsive
+              />
+            </Menu.Item>
+
+            {/* ...........custom_code: PNS-1821 : popup to show filter data in json format */}
+            <Menu.Item key={MENU_KEYS.VIEW_JSON}>
+              <ModalTrigger
+                triggerNode={
+                  <span data-test="view-query-menu-item">{t('View Json')}</span>
+                }
+                modalTitle={t('View JSON')}
+                modalBody={
+                  <JsonEditor
+                    showLoadingForImport
+                    name="json_metadata"
+                    value={jsonFormData}
+                    tabSize={2}
+                    width="100%"
+                    height="400px"
+                    wrapEnabled
+                  />
+                }
+                draggable
+                resizable
+                responsive
+              />
+            </Menu.Item>
+          </>
         )}
+        {/*  ...........custom_code_end */}
 
         {this.props.supersetCanExplore && (
           <Menu.Item key={MENU_KEYS.VIEW_RESULTS}>
