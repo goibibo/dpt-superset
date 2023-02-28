@@ -178,9 +178,7 @@ export const DashboardPage: FC<PageProps> = ({ idOrSlug }: PageProps) => {
   const { result: dashboard, error: dashboardApiError } =
     useDashboard(idOrSlug);
   // .........custom_code: for dynamic charts
-  const experimentId =
-    regularUrlParams?.experiment_id ??
-    dashboard?.metadata?.dynamic_filters?.experiment_id; // .........custom_code: get experiment id
+  const experimentId = regularUrlParams?.experiment_id; // .........custom_code: get experiment id
   const chartVariants = regularUrlParams?.variants
     ? JSON.parse(regularUrlParams?.variants)
     : [];
