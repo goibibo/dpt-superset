@@ -57,6 +57,9 @@ import { FILTER_BOX_MIGRATION_STATES } from 'src/explore/constants';
 import { PageHeaderWithActions } from 'src/components/PageHeaderWithActions';
 import { DashboardEmbedModal } from '../DashboardEmbedControls';
 import OverwriteConfirm from '../OverwriteConfirm';
+// ...........custom_code: http://jira.mmt.com/browse/PSN-1638
+import extractUrlParams from '../../util/extractUrlParams';
+// ...........custom_code_end: http://jira.mmt.com/browse/PSN-1638
 
 const uiOverrideRegistry = getUiOverrideRegistry();
 
@@ -185,6 +188,9 @@ class Header extends React.PureComponent {
       emphasizeRedo: false,
       showingPropertiesModal: false,
       isDropdownVisible: false,
+      // ...........custom_code: http://jira.mmt.com/browse/PSN-1638
+      isVisibleSaveBtn: true,
+      // ...........custom_code_end: http://jira.mmt.com/browse/PSN-1638
     };
 
     this.handleChangeText = this.handleChangeText.bind(this);
@@ -202,6 +208,12 @@ class Header extends React.PureComponent {
   componentDidMount() {
     const { refreshFrequency } = this.props;
     this.startPeriodicRender(refreshFrequency * 1000);
+
+    // ...........custom_code: http://jira.mmt.com/browse/PSN-1638
+    if (extractUrlParams('regular')?.experiment_id) {
+      this.setState(() => ({ isVisibleSaveBtn: false }));
+    }
+    // ...........custom_code_end: http://jira.mmt.com/browse/PSN-1638
   }
 
   componentDidUpdate(prevProps) {
@@ -622,7 +634,7 @@ class Header extends React.PureComponent {
               ) : (
                 <div css={actionButtonsStyle}>
                   {NavExtension && <NavExtension />}
-                  {userCanEdit && (
+                  {userCanEdit && this.state.isVisibleSaveBtn && (
                     <Button
                       buttonStyle="secondary"
                       onClick={this.toggleEditMode}
