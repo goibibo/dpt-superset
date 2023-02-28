@@ -173,7 +173,7 @@ export const setInScopeStatusOfFilters =
   (
     filterScopes: {
       filterId: string;
-      chartsInScope: number[];
+      chartsInScope: (number | string)[];
       tabsInScope: string[];
     }[],
   ) =>

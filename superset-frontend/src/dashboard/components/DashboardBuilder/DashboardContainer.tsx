@@ -114,7 +114,7 @@ const DashboardContainer: FC<DashboardContainerProps> = ({ topLevelTabs }) => {
           chartsInScope: [],
         };
       }
-      const chartsInScope: number[] = getChartIdsInFilterScope(
+      const chartsInScope: (number | string)[] = getChartIdsInFilterScope(
         filterScope.scope,
         charts,
         dashboardLayout,

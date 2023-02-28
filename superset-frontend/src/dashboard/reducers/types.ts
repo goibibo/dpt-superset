@@ -30,7 +30,7 @@ export type ChartConfiguration = {
     id: number;
     crossFilters: {
       scope: NativeFilterScope;
-      chartsInScope: number[];
+      chartsInScope: (number | string)[];
     };
   };
 };
