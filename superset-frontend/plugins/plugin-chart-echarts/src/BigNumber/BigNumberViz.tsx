@@ -128,7 +128,8 @@ class BigNumberVis extends React.PureComponent<BigNumberVizProps> {
   }
 
   renderHeader(maxHeight: number) {
-    const { bigNumber, headerFormatter, width } = this.props;
+    const { bigNumber, headerFormatter, width, mainColor, isDynamicColorCode } =
+      this.props; // custom_code: PSN-1948
     // @ts-ignore
     const text = bigNumber === null ? t('No data') : headerFormatter(bigNumber);
 
@@ -156,6 +157,7 @@ class BigNumberVis extends React.PureComponent<BigNumberVizProps> {
         style={{
           fontSize,
           height: maxHeight,
+          color: isDynamicColorCode ? mainColor : 'unset', // custom_code: PSN-1948
         }}
         onContextMenu={onContextMenu}
       >
@@ -165,7 +167,14 @@ class BigNumberVis extends React.PureComponent<BigNumberVizProps> {
   }
 
   renderSubheader(maxHeight: number) {
-    const { bigNumber, subheader, width, bigNumberFallback } = this.props;
+    const {
+      bigNumber,
+      subheader,
+      width,
+      bigNumberFallback,
+      mainColor,
+      isDynamicColorCode, // custom_code: PSN-1948
+    } = this.props;
     let fontSize = 0;
 
     const NO_DATA_OR_HASNT_LANDED = t(
@@ -196,6 +205,7 @@ class BigNumberVis extends React.PureComponent<BigNumberVizProps> {
           style={{
             fontSize,
             height: maxHeight,
+            color: isDynamicColorCode ? mainColor : 'unset', // custom_code: PSN-1948
           }}
         >
           {text}

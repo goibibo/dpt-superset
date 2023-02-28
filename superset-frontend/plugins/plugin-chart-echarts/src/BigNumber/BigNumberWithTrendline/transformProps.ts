@@ -89,6 +89,7 @@ export default function transformProps(
     forceTimestampFormatting,
     yAxisFormat,
     timeRangeFixed,
+    isDynamicColorCode,
   } = formData;
   const granularity = extractTimegrain(rawFormData);
   const {
@@ -104,7 +105,7 @@ export default function transformProps(
   let formattedSubheader = subheader;
 
   const { r, g, b } = colorPicker;
-  const mainColor = `rgb(${r}, ${g}, ${b})`;
+  let mainColor = `rgb(${r}, ${g}, ${b})`;
 
   const xAxisLabel = getXAxisLabel(rawFormData) as string;
   let trendLineData: TimeSeriesDatum[] | undefined;
@@ -153,11 +154,17 @@ export default function transformProps(
   }
 
   let className = '';
+  // custom_code: PSN-1948
+  let colorCode = '';
   if (percentChange > 0) {
     className = 'positive';
+    colorCode = `rgb(20, 164, 77)`;
   } else if (percentChange < 0) {
     className = 'negative';
+    colorCode = `rgb(220, 76, 100)`;
   }
+  mainColor = isDynamicColorCode ? colorCode : mainColor;
+  // custom_code_end: PSN-1948
 
   let metricEntry;
   if (chartProps.datasource?.metrics) {
@@ -263,6 +270,7 @@ export default function transformProps(
     headerFontSize,
     subheaderFontSize,
     mainColor,
+    isDynamicColorCode, // custom_code: PSN-1948
     showTimestamp,
     showTrendLine,
     startYAxisAtZero,

@@ -24,7 +24,11 @@ import {
   getStandardizedControls,
   sections,
 } from '@superset-ui/chart-controls';
-import { headerFontSize, subheaderFontSize } from '../sharedControls';
+import {
+  headerFontSize,
+  subheaderFontSize,
+  dynamicColorCode,
+} from '../sharedControls';
 
 export default {
   controlPanelSections: [
@@ -60,6 +64,7 @@ export default {
       controlSetRows: [
         [headerFontSize],
         [subheaderFontSize],
+        [dynamicColorCode],
         ['y_axis_format'],
         [
           {

@@ -26,7 +26,11 @@ import {
   temporalColumnMixin,
 } from '@superset-ui/chart-controls';
 import React from 'react';
-import { headerFontSize, subheaderFontSize } from '../sharedControls';
+import {
+  headerFontSize,
+  subheaderFontSize,
+  dynamicColorCode,
+} from '../sharedControls';
 
 const config: ControlPanelConfig = {
   controlPanelSections: [
@@ -132,6 +136,7 @@ const config: ControlPanelConfig = {
       expanded: true,
       controlSetRows: [
         ['color_picker', null],
+        [dynamicColorCode], // custom_code: PSN-1948
         [headerFontSize],
         [subheaderFontSize],
         ['y_axis_format'],
