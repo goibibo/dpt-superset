@@ -41,6 +41,7 @@ export interface GetFormDataWithExtraFiltersArguments {
   colorScheme?: string;
   colorNamespace?: string;
   sliceId: number;
+  variantSliceId?: string;
   dataMask: DataMaskStateWithId;
   nativeFilters: PartialFilters;
   extraControls: Record<string, string | boolean | null>;
@@ -60,16 +61,20 @@ export default function getFormDataWithExtraFilters({
   colorScheme,
   colorNamespace,
   sliceId,
+  variantSliceId, // custom_code: PSN-2588 add caching for variant chart
   dataMask,
   extraControls,
   labelColors,
   sharedLabelColors,
   allSliceIds,
 }: GetFormDataWithExtraFiltersArguments) {
+  // custom_code: PSN-2588 add caching for variant chart
+  const slice_id = variantSliceId ?? sliceId;
+  // custom_code_end: PSN-2588 add caching for variant chart
   // if dashboard metadata + filters have not changed, use cache if possible
-  const cachedFormData = cachedFormdataByChart[sliceId];
+  const cachedFormData = cachedFormdataByChart[slice_id];
   if (
-    cachedFiltersByChart[sliceId] === filters &&
+    cachedFiltersByChart[slice_id] === filters &&
     areObjectsEqual(cachedFormData?.color_scheme, colorScheme, {
       ignoreUndefined: true,
     }) &&
@@ -119,8 +124,8 @@ export default function getFormDataWithExtraFilters({
     ...extraControls,
   };
 
-  cachedFiltersByChart[sliceId] = filters;
-  cachedFormdataByChart[sliceId] = { ...formData, dataMask, extraControls };
+  cachedFiltersByChart[slice_id] = filters;
+  cachedFormdataByChart[slice_id] = { ...formData, dataMask, extraControls };
 
   return formData;
 }
