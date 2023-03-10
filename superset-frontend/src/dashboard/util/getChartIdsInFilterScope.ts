@@ -40,5 +40,12 @@ export function getChartIdsInFilterScope(
             filterScope.rootPath.includes(elementId),
           ),
     )
-    .map(chart => chart.id);
+    .map(chart => {
+      // ........custom_code: PSN-1820 : adding variantSliceId in native filter scope, to update variant chart filters
+      if (chart?.form_data?.variantSliceId) {
+        return chart.form_data.variantSliceId;
+      }
+      // ........custom_code_end
+      return chart.id;
+    });
 }

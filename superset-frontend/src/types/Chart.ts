@@ -31,6 +31,9 @@ export type ChartLinkedDashboard = {
 };
 
 export interface Chart {
+  sectionTitle: any;
+  isActiveOnDashboard: any;
+  variantSliceId: any;
   id: number;
   url: string;
   viz_type: string;
@@ -55,6 +58,10 @@ export interface Chart {
   datasource_name_text?: string;
   form_data: {
     viz_type: string;
+    slice_id?: string;
+    variantId?: string;
+    custom_filters?: any;
+    metricDetails?: any;
   };
   is_managed_externally: boolean;
 

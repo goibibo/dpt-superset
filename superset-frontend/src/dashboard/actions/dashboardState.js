@@ -191,6 +191,11 @@ export function setRefreshFrequency(refreshFrequency, isPersistent = false) {
   return { type: SET_REFRESH_FREQUENCY, refreshFrequency, isPersistent };
 }
 
+export const ADD_EXPERIMENT_DETAILS = 'ADD_EXPERIMENT_DETAILS';
+export function addExperimentDetails(experimentDetails) {
+  return { type: ADD_EXPERIMENT_DETAILS, experimentDetails };
+}
+
 export function saveDashboardRequestSuccess(lastModifiedTime) {
   return dispatch => {
     dispatch(onSave(lastModifiedTime));

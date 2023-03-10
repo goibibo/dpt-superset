@@ -88,3 +88,15 @@ export const subheaderFontSize: CustomControlItem = {
     ],
   },
 };
+
+// ...........custom_code: PSN-1925
+export const dynamicColorCode: CustomControlItem = {
+  name: 'is_dynamic_color_code',
+  config: {
+    type: 'CheckboxControl',
+    label: t('Dynamic Color Code'),
+    renderTrigger: true,
+    default: false,
+    description: t('Use color code for negative and positive values'),
+  },
+};

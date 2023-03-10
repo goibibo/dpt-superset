@@ -24,6 +24,7 @@ import { css } from '@superset-ui/core';
 import { LayoutItem, RootState } from 'src/dashboard/types';
 import AnchorLink from 'src/dashboard/components/AnchorLink';
 import Chart from 'src/dashboard/containers/Chart';
+import ChartVariant from 'src/dashboard/containers/ChartVariant';
 import DeleteComponentButton from 'src/dashboard/components/DeleteComponentButton';
 import DragDroppable from 'src/dashboard/components/dnd/DragDroppable';
 import HoverMenu from 'src/dashboard/components/menu/HoverMenu';
@@ -103,7 +104,9 @@ const ChartHolder: React.FC<ChartHolderProps> = ({
 }) => {
   const { chartId } = component.meta;
   const isFullSize = fullSizeChartId === chartId;
-
+  // ........custom_code:1432
+  const isVariantChart = Boolean(component?.meta?.variantSliceId);
+  // .........custom_code_end:1432
   const focusHighlightStyles = useFilterFocusHighlightStyles(chartId);
   const dashboardState = useSelector(
     (state: RootState) => state.dashboardState,
@@ -297,25 +300,47 @@ const ChartHolder: React.FC<ChartHolderProps> = ({
                   }`}
               </style>
             )}
-            <Chart
-              componentId={component.id}
-              id={component.meta.chartId}
-              dashboardId={dashboardId}
-              width={chartWidth}
-              height={chartHeight}
-              sliceName={
-                component.meta.sliceNameOverride ||
-                component.meta.sliceName ||
-                ''
-              }
-              updateSliceName={handleUpdateSliceName}
-              isComponentVisible={isComponentVisible}
-              handleToggleFullSize={handleToggleFullSize}
-              isFullSize={isFullSize}
-              setControlValue={handleExtraControl}
-              extraControls={extraControls}
-              isInView={isInView}
-            />
+            {isVariantChart ? (
+              <ChartVariant
+                componentId={component.id}
+                id={component.meta.chartId}
+                dashboardId={dashboardId}
+                width={chartWidth}
+                height={chartHeight}
+                sliceName={
+                  component.meta.sliceNameOverride ||
+                  component.meta.sliceName ||
+                  ''
+                }
+                updateSliceName={handleUpdateSliceName}
+                isComponentVisible={isComponentVisible}
+                handleToggleFullSize={handleToggleFullSize}
+                isFullSize={isFullSize}
+                setControlValue={handleExtraControl}
+                extraControls={extraControls}
+                isInView={isInView}
+              />
+            ) : (
+              <Chart
+                componentId={component.id}
+                id={component.meta.chartId}
+                dashboardId={dashboardId}
+                width={chartWidth}
+                height={chartHeight}
+                sliceName={
+                  component.meta.sliceNameOverride ||
+                  component.meta.sliceName ||
+                  ''
+                }
+                updateSliceName={handleUpdateSliceName}
+                isComponentVisible={isComponentVisible}
+                handleToggleFullSize={handleToggleFullSize}
+                isFullSize={isFullSize}
+                setControlValue={handleExtraControl}
+                extraControls={extraControls}
+                isInView={isInView}
+              />
+            )}
             {editMode && (
               <HoverMenu position="top">
                 <div data-test="dashboard-delete-component-button">

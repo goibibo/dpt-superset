@@ -30,6 +30,7 @@ export { default as EchartsGraphChartPlugin } from './Graph';
 export { default as EchartsGaugeChartPlugin } from './Gauge';
 export { default as EchartsRadarChartPlugin } from './Radar';
 export { default as EchartsFunnelChartPlugin } from './Funnel';
+export { default as EchartsConversionFunnelChartPlugin } from './ConversionFunnel';
 export { default as EchartsTreeChartPlugin } from './Tree';
 export { default as EchartsTreemapChartPlugin } from './Treemap';
 export { BigNumberChartPlugin, BigNumberTotalChartPlugin } from './BigNumber';
@@ -37,6 +38,7 @@ export { default as EchartsSunburstChartPlugin } from './Sunburst';
 
 export { default as BoxPlotTransformProps } from './BoxPlot/transformProps';
 export { default as FunnelTransformProps } from './Funnel/transformProps';
+export { default as ConversionFunnelTransformProps } from './ConversionFunnel/transformProps';
 export { default as GaugeTransformProps } from './Gauge/transformProps';
 export { default as GraphTransformProps } from './Graph/transformProps';
 export { default as MixedTimeseriesTransformProps } from './MixedTimeseries/transformProps';

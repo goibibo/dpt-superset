@@ -20,6 +20,8 @@
 # development environments. Also note that superset_config_docker.py is imported
 # as a final step as a means to override "defaults" configured here
 #
+from flask_appbuilder.security.manager import AUTH_OID, AUTH_OAUTH, AUTH_REMOTE_USER
+from keycloak_security_manager import OIDCSecurityManager
 import logging
 import os
 from datetime import timedelta
@@ -29,7 +31,7 @@ from cachelib.file import FileSystemCache
 from celery.schedules import crontab
 
 logger = logging.getLogger()
-
+# AUTH_TYPE = AUTH_OAUTH
 
 def get_env_variable(var_name: str, default: Optional[str] = None) -> str:
     """Get the environment variable or raise exception."""
@@ -66,7 +68,7 @@ REDIS_HOST = get_env_variable("REDIS_HOST")
 REDIS_PORT = get_env_variable("REDIS_PORT")
 REDIS_CELERY_DB = get_env_variable("REDIS_CELERY_DB", "0")
 REDIS_RESULTS_DB = get_env_variable("REDIS_RESULTS_DB", "1")
-
+OIDC_ENABLE=True
 RESULTS_BACKEND = FileSystemCache("/app/superset_home/sqllab")
 
 CACHE_CONFIG = {
@@ -78,6 +80,28 @@ CACHE_CONFIG = {
     "CACHE_REDIS_DB": REDIS_RESULTS_DB,
 }
 DATA_CACHE_CONFIG = CACHE_CONFIG
+
+'''
+---------------------------KEYCLOACK ----------------------------
+'''
+curr  =  os.path.abspath(os.getcwd())
+print(curr,'-------')
+AUTH_TYPE = AUTH_OID
+OIDC_CLIENT_SECRETS = curr + '/docker/pythonpath_dev/client_secret.json'
+OIDC_ID_TOKEN_COOKIE_SECURE = False
+OIDC_REQUIRE_VERIFIED_EMAIL = False
+CUSTOM_SECURITY_MANAGER = OIDCSecurityManager
+AUTH_USER_REGISTRATION = True
+AUTH_USER_REGISTRATION_ROLE = 'Gamma'
+OIDC_VALID_ISSUERS = 'http://dpt-keycloak.ecs.mmt/realms/mmt'
+OIDC_CLOCK_SKEW = 560
+OIDC_INTROSPECTION_AUTH_METHOD = 'client_secret_post'
+OIDC_TOKEN_TYPE_HINT = 'access_token'
+# ENABLE_PROXY_FIX = True
+
+'''
+--------------------------------------------------------------
+'''
 
 
 class CeleryConfig(object):

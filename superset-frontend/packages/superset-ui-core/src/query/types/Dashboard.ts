@@ -86,7 +86,7 @@ export type Filter = {
   time_range?: string;
   requiredFirst?: boolean;
   tabsInScope?: string[];
-  chartsInScope?: number[];
+  chartsInScope?: (number | string)[];
   type: typeof NativeFilterType.NATIVE_FILTER;
   description: string;
 };

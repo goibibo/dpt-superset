@@ -1,4 +1,4 @@
-/*
+/**
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -16,12 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import { buildQueryContext, QueryFormData } from '@superset-ui/core';
 
-export { default as CategoricalAirbnb } from './airbnb';
-export { default as CategoricalD3 } from './d3';
-export { default as CategoricalEcharts } from './echarts';
-export { default as CategoricalGoogle } from './google';
-export { default as CategoricalLyft } from './lyft';
-export { default as CategoricalPreset } from './preset';
-export { default as CategoricalSuperset } from './superset';
-export { default as CategoricalCustom } from './custom';
+export default function buildQuery(formData: QueryFormData) {
+  const { metric, sort_by_metric } = formData;
+  return buildQueryContext(formData, baseQueryObject => [
+    {
+      ...baseQueryObject,
+      ...(sort_by_metric && { orderby: [[metric, false]] }),
+    },
+  ]);
+}

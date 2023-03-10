@@ -37,6 +37,7 @@ export type BigNumberTotalFormData = QueryFormData & {
   metric?: QueryFormMetric;
   yAxisFormat?: string;
   forceTimestampFormatting?: boolean;
+  isDynamicColorCode?: boolean;
 };
 
 export type BigNumberWithTrendlineFormData = BigNumberTotalFormData & {
@@ -46,6 +47,7 @@ export type BigNumberWithTrendlineFormData = BigNumberTotalFormData & {
     b: number;
   };
   compareLag?: string | number;
+  isDynamicColorCode?: boolean;
 };
 
 export interface BigNumberTotalChartDataResponseResult
@@ -85,6 +87,7 @@ export type BigNumberVizProps = {
   timestamp?: DataRecordValue;
   trendLineData?: TimeSeriesDatum[];
   mainColor?: string;
+  isDynamicColorCode?: boolean; // custom_code: PSN-1948
   echartOptions?: EChartsCoreOption;
   onContextMenu?: (
     clientX: number,

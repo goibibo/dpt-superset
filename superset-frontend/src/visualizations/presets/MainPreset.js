@@ -65,6 +65,7 @@ import {
   EchartsGaugeChartPlugin,
   EchartsRadarChartPlugin,
   EchartsFunnelChartPlugin,
+  EchartsConversionFunnelChartPlugin,
   EchartsTreemapChartPlugin,
   EchartsMixedTimeseriesChartPlugin,
   EchartsTreeChartPlugin,
@@ -111,6 +112,9 @@ export default class MainPreset extends Preset {
         new EventFlowChartPlugin().configure({ key: 'event_flow' }),
         new FilterBoxChartPlugin().configure({ key: 'filter_box' }),
         new EchartsFunnelChartPlugin().configure({ key: 'funnel' }),
+        new EchartsConversionFunnelChartPlugin().configure({
+          key: 'conversion_funnel',
+        }),
         new EchartsTreemapChartPlugin().configure({ key: 'treemap_v2' }),
         new EchartsGaugeChartPlugin().configure({ key: 'gauge_chart' }),
         new EchartsGraphChartPlugin().configure({ key: 'graph_chart' }),

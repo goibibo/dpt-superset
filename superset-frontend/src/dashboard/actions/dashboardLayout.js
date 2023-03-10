@@ -117,6 +117,17 @@ export const createComponent = setUnsavedChangesAfterAction(dropResult => ({
   },
 }));
 
+// .------------------------- custom_code: Change Layout according to custom filters
+export const RESTRUCTURE_COMPONENT = 'RESTRUCTURE_COMPONENT';
+export const restructureComponent = setUnsavedChangesAfterAction(
+  dropResult => ({
+    type: RESTRUCTURE_COMPONENT,
+    payload: {
+      dropResult,
+    },
+  }),
+);
+
 // Tabs -----------------------------------------------------------------------
 export const CREATE_TOP_LEVEL_TABS = 'CREATE_TOP_LEVEL_TABS';
 export const createTopLevelTabs = setUnsavedChangesAfterAction(dropResult => ({

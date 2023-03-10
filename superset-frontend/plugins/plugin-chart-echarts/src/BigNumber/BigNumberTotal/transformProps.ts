@@ -40,6 +40,7 @@ export default function transformProps(
     forceTimestampFormatting,
     timeFormat,
     yAxisFormat,
+    isDynamicColorCode,
   } = formData;
   const refs: Refs = {};
   const { data = [], coltypes = [] } = queriesData[0];
@@ -49,6 +50,12 @@ export default function transformProps(
   const bigNumber =
     data.length === 0 ? null : parseMetricValue(data[0][metricName]);
 
+  // custom_code: PSN-1948
+  let mainColor: any = null;
+  if (bigNumber && isDynamicColorCode) {
+    mainColor = bigNumber > 0 ? `rgb(20, 164, 77)` : `rgb(220, 76, 100)`;
+  }
+  // custom_code_end: PSN-1948
   let metricEntry;
   if (chartProps.datasource?.metrics) {
     metricEntry = chartProps.datasource.metrics.find(
@@ -79,6 +86,8 @@ export default function transformProps(
     headerFontSize,
     subheaderFontSize,
     subheader: formattedSubheader,
+    isDynamicColorCode, // custom_code: PSN-1948
+    mainColor, // custom_code: PSN-1948
     onContextMenu,
     refs,
   };

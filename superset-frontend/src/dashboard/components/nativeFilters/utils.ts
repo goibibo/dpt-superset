@@ -150,7 +150,7 @@ const isComponentATab = (
 
 const findTabsWithChartsInScopeHelper = (
   dashboardLayout: DashboardLayout,
-  chartsInScope: number[],
+  chartsInScope: (number | string)[],
   componentId: string,
   tabIds: string[],
   tabsToHighlight: Set<string>,
@@ -181,7 +181,7 @@ const findTabsWithChartsInScopeHelper = (
 
 export const findTabsWithChartsInScope = (
   dashboardLayout: DashboardLayout,
-  chartsInScope: number[],
+  chartsInScope: (number | string)[],
 ) => {
   const dashboardRoot = dashboardLayout[DASHBOARD_ROOT_ID];
   const rootChildId = dashboardRoot.children[0];

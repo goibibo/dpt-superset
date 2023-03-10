@@ -161,12 +161,17 @@ class Chart extends React.PureComponent {
         this.props.ownState,
       );
     } else {
-      // Create chart with POST request
+      // .........custom_code: 1432 to assign response to respective dynamic variant charts
+      // .........to revert remove if else and keep else scope data only
+      const chartId = this.props.formData?.variantSliceId
+        ? this.props.formData.variantSliceId
+        : this.props.chartId;
+      // .........custom_code_end: 1432
       this.props.actions.postChartFormData(
         this.props.formData,
         this.props.force || getUrlParam(URL_PARAMS.force), // allow override via url params force=true
         this.props.timeout,
-        this.props.chartId,
+        chartId,
         this.props.dashboardId,
         this.props.ownState,
       );
