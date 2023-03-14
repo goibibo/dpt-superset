@@ -70,7 +70,7 @@ REDIS_CELERY_DB = get_env_variable("REDIS_CELERY_DB", "0")
 REDIS_RESULTS_DB = get_env_variable("REDIS_RESULTS_DB", "1")
 OIDC_ENABLE=True
 RESULTS_BACKEND = FileSystemCache("/app/superset_home/sqllab")
-
+SUPERSET_WEBSERVER_TIMEOUT = 600
 CACHE_CONFIG = {
     "CACHE_TYPE": "redis",
     "CACHE_DEFAULT_TIMEOUT": 300,
@@ -85,7 +85,6 @@ DATA_CACHE_CONFIG = CACHE_CONFIG
 ---------------------------KEYCLOACK ----------------------------
 '''
 curr  =  os.path.abspath(os.getcwd())
-print(curr,'-------')
 AUTH_TYPE = AUTH_OID
 OIDC_CLIENT_SECRETS = curr + '/docker/pythonpath_dev/client_secret.json'
 OIDC_ID_TOKEN_COOKIE_SECURE = False
@@ -93,7 +92,7 @@ OIDC_REQUIRE_VERIFIED_EMAIL = False
 CUSTOM_SECURITY_MANAGER = OIDCSecurityManager
 AUTH_USER_REGISTRATION = True
 AUTH_USER_REGISTRATION_ROLE = 'Gamma'
-OIDC_VALID_ISSUERS = 'http://dpt-keycloak.ecs.mmt/realms/mmt'
+OIDC_VALID_ISSUERS = '<realm_url>'
 OIDC_CLOCK_SKEW = 560
 OIDC_INTROSPECTION_AUTH_METHOD = 'client_secret_post'
 OIDC_TOKEN_TYPE_HINT = 'access_token'
