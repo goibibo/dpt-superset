@@ -23,9 +23,11 @@ import { css, styled } from '@superset-ui/core';
 
 import PopoverDropdown from 'src/components/PopoverDropdown';
 import EditableTitle from 'src/components/EditableTitle';
+import ExperimentSummary from 'src/dashboard/components/ExperimentSummary';
 import DragDroppable from 'src/dashboard/components/dnd/DragDroppable';
 import DragHandle from 'src/dashboard/components/dnd/DragHandle';
 import AnchorLink from 'src/dashboard/components/AnchorLink';
+
 import HoverMenu from 'src/dashboard/components/menu/HoverMenu';
 import WithPopoverMenu from 'src/dashboard/components/menu/WithPopoverMenu';
 import BackgroundStyleDropdown from 'src/dashboard/components/menu/BackgroundStyleDropdown';
@@ -213,31 +215,39 @@ class Header extends React.PureComponent {
               ]}
               editMode={editMode}
             >
-              <HeaderStyles
-                className={cx(
-                  'dashboard-component',
-                  'dashboard-component-header',
-                  headerStyle.className,
-                  rowStyle.className,
-                )}
-              >
-                {editMode && (
-                  <HoverMenu position="top">
-                    <DeleteComponentButton
-                      onDelete={this.handleDeleteComponent}
-                    />
-                  </HoverMenu>
-                )}
-                <EditableTitle
-                  title={component.meta.text}
-                  canEdit={editMode}
-                  onSaveTitle={this.handleChangeText}
-                  showTooltip={false}
-                />
-                {!editMode && (
-                  <AnchorLink id={component.id} dashboardId={dashboardId} />
-                )}
-              </HeaderStyles>
+              {/* .......custom_code */}
+
+              {!component.meta.isExperimentSummary ? (
+                <HeaderStyles
+                  className={cx(
+                    'dashboard-component',
+                    'dashboard-component-header',
+                    headerStyle.className,
+                    rowStyle.className,
+                  )}
+                >
+                  {editMode && (
+                    <HoverMenu position="top">
+                      <DeleteComponentButton
+                        onDelete={this.handleDeleteComponent}
+                      />
+                    </HoverMenu>
+                  )}
+                  <EditableTitle
+                    title={component.meta.text}
+                    canEdit={editMode}
+                    onSaveTitle={this.handleChangeText}
+                    showTooltip={false}
+                  />
+
+                  {!editMode && (
+                    <AnchorLink id={component.id} dashboardId={dashboardId} />
+                  )}
+                </HeaderStyles>
+              ) : (
+                <ExperimentSummary meta={component.meta} />
+              )}
+              {/* .......custom_code_end */}
             </WithPopoverMenu>
 
             {dropIndicatorProps && <div {...dropIndicatorProps} />}

@@ -281,6 +281,35 @@ export const dashboardResponse = {
       },
     ],
     url: 'http://10.66.89.31:8082/details/416',
+    experimentSummary: [
+      {
+        variant: 'A',
+        totals: 1500,
+        positives: 500,
+        positive_rate: 0.33333,
+        posterior_mean: 0.33344,
+        prob_being_best: 0.91675,
+        expected_loss: 0.0006531,
+      },
+      {
+        variant: 'B',
+        totals: 1200,
+        positives: 350,
+        positive_rate: 0.29167,
+        posterior_mean: 0.29184,
+        prob_being_best: 0.00775,
+        expected_loss: 0.0422362,
+      },
+      {
+        variant: 'C',
+        totals: 1300,
+        positives: 400,
+        positive_rate: 0.30769,
+        posterior_mean: 0.30784,
+        prob_being_best: 0.0755,
+        expected_loss: 0.0261694,
+      },
+    ],
   },
 };
 

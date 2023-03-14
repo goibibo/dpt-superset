@@ -37,7 +37,6 @@ import {
   TAB_TYPE,
   TABS_TYPE,
   HEADER_TYPE,
-  MARKDOWN_TYPE,
 } from '../util/componentTypes';
 import {
   UPDATE_COMPONENTS,
@@ -160,8 +159,14 @@ const actionHandlers = {
 
       if (dropResult.charts) {
         if (dropResult.experimentDetails) {
-          const { name, description, url, treatmentVariant, controlVariant } =
-            dropResult.experimentDetails;
+          const {
+            name,
+            description,
+            url,
+            treatmentVariant,
+            controlVariant,
+            experimentSummary,
+          } = dropResult.experimentDetails;
 
           // ...........new row container creation to insert markdown
           const rowEntitiesContainer = newComponentFactory(
@@ -170,65 +175,27 @@ const actionHandlers = {
           );
           newEntities[rowEntitiesContainer.id] = rowEntitiesContainer;
 
-          // ..... converting data into table format
-          const variantValues = ['', ''];
-          ([controlVariant, treatmentVariant] || []).forEach(
-            (variant, index) => {
-              if (variant?.length) {
-                variant?.forEach(data => {
-                  // let dataValues = '';
-                  // (data.values || []).forEach(value => {
-                  //   dataValues += `${value},`;
-                  // });
-                  variantValues[
-                    index
-                  ] += ` | ${data.id} | ${data.experimentUid} | ${data.description} | ${data.values} | ${data.percentage} |  \n`;
-                });
-              }
-            },
-          );
-          const tableHeading = `|<pre>  Variant </pre> | <pre>  Experiment  </pre> | <pre>  Description  </pre> | <pre>   Values    </pre> | <pre>  Percentage  </pre> | `;
-          const alignStyle = ` | --- |  :---:  | :---: | :---: | :---: | `;
+          // ...................
 
-          // ..........creating new markdown component and adding code
-          const markdownEntities = newComponentFactory(
-            MARKDOWN_TYPE,
+          const newHeaderContainer = newComponentFactory(
+            HEADER_TYPE,
             (parent.parents || []).slice(),
           );
+          newHeaderContainer.meta.isExperimentSummary = true;
+          newHeaderContainer.meta.background = 'BACKGROUND_WHITE';
+          newHeaderContainer.meta = {
+            ...newHeaderContainer.meta,
+            name,
+            description,
+            url,
+            treatmentVariant,
+            controlVariant,
+            experimentSummary,
+          };
+          newEntities[newHeaderContainer.id] = newHeaderContainer;
+          grid.children.push(newHeaderContainer.id);
 
-          // ......adding above created markdown into row.
-          rowEntitiesContainer.children.push(markdownEntities.id);
-          // .....adding markdown in layout/state;
-          newEntities[markdownEntities.id] = markdownEntities;
-          // .....updating grid chilren to maintain sequence
-          grid.children.push(rowEntitiesContainer.id);
-          markdownEntities.meta.width = GRID_COLUMN_COUNT;
-          markdownEntities.meta.code = `## ${name}
-### ${description}
-
-${
-  variantValues[0]
-    ? ` ### Control Variant
-${tableHeading}
-${alignStyle}
-${variantValues[0]}`
-    : ''
-}
-  
-${
-  variantValues[1]
-    ? ` ### Treatment Variant
-${tableHeading}
-${alignStyle}
-${variantValues[1]}`
-    : ''
-}
-  
-<br />
-
-<br />
-
-Click here to see [Experiment]( ${url} )`;
+          // ...................
         }
 
         dropResult.charts.forEach(chart => {
@@ -267,12 +234,15 @@ Click here to see [Experiment]( ${url} )`;
         });
 
         // ............creating grid rows and assigning chart into rows & updating grid.
+
+        // ...........new HEADER component creation
         Object?.keys(sectionHashMap)?.forEach(key => {
           const headerContainer = newComponentFactory(
             HEADER_TYPE,
             (parent.parents || []).slice(),
           );
           headerContainer.meta.text = key;
+          headerContainer.meta.background = 'BACKGROUND_WHITE';
           newEntities[headerContainer.id] = headerContainer;
           grid.children.push(headerContainer.id);
 
