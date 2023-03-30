@@ -308,8 +308,8 @@ export default class TimeSeriesColumnControl extends React.Component {
           this.formRow(
             t('Color bounds'),
             t(`Number bounds used for color encoding from red to blue.
-               Reverse the numbers for blue to red. To get pure red or blue,
-               you can enter either only min or max.`),
+                Reverse the numbers for blue to red. To get pure red or blue,
+                you can enter either only min or max.`),
             'bounds',
             <BoundsControl
               value={this.state.bounds}

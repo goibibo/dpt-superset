@@ -175,8 +175,8 @@ const actionHandlers = {
           );
           newEntities[rowEntitiesContainer.id] = rowEntitiesContainer;
 
-          // ...................
-
+          // ..... converting data into table format
+          // .........custom_code:PSN-2654
           const newHeaderContainer = newComponentFactory(
             HEADER_TYPE,
             (parent.parents || []).slice(),
@@ -194,8 +194,7 @@ const actionHandlers = {
           };
           newEntities[newHeaderContainer.id] = newHeaderContainer;
           grid.children.push(newHeaderContainer.id);
-
-          // ...................
+          // .........custom_code_end:PSN-2654
         }
 
         dropResult.charts.forEach(chart => {
@@ -234,15 +233,12 @@ const actionHandlers = {
         });
 
         // ............creating grid rows and assigning chart into rows & updating grid.
-
-        // ...........new HEADER component creation
         Object?.keys(sectionHashMap)?.forEach(key => {
           const headerContainer = newComponentFactory(
             HEADER_TYPE,
             (parent.parents || []).slice(),
           );
           headerContainer.meta.text = key;
-          headerContainer.meta.background = 'BACKGROUND_WHITE';
           newEntities[headerContainer.id] = headerContainer;
           grid.children.push(headerContainer.id);
 

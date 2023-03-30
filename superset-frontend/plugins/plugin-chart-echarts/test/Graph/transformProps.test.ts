@@ -71,7 +71,6 @@ describe('EchartsGraph transformProps', () => {
             expect.objectContaining({
               data: [
                 {
-                  col: 'source_column',
                   category: undefined,
                   id: '0',
                   label: { show: true },
@@ -89,7 +88,6 @@ describe('EchartsGraph transformProps', () => {
                   value: 6,
                 },
                 {
-                  col: 'target_column',
                   category: undefined,
                   id: '1',
                   label: { show: true },
@@ -107,7 +105,6 @@ describe('EchartsGraph transformProps', () => {
                   value: 6,
                 },
                 {
-                  col: 'source_column',
                   category: undefined,
                   id: '2',
                   label: { show: true },
@@ -125,7 +122,6 @@ describe('EchartsGraph transformProps', () => {
                   value: 5,
                 },
                 {
-                  col: 'target_column',
                   category: undefined,
                   id: '3',
                   label: { show: true },
@@ -233,7 +229,6 @@ describe('EchartsGraph transformProps', () => {
               data: [
                 {
                   id: '0',
-                  col: 'source_column',
                   name: 'source_value',
                   value: 11,
                   symbolSize: 10,
@@ -248,7 +243,6 @@ describe('EchartsGraph transformProps', () => {
                 },
                 {
                   id: '1',
-                  col: 'target_column',
                   name: 'target_value',
                   value: 11,
                   symbolSize: 10,

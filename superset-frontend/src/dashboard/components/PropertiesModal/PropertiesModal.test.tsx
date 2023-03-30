@@ -217,9 +217,7 @@ test('should render - FeatureFlag enabled', async () => {
   expect(
     screen.getByRole('heading', { name: 'Certification' }),
   ).toBeInTheDocument();
-  // Tags will be included since isFeatureFlag always returns true in this test
-  expect(screen.getByRole('heading', { name: 'Tags' })).toBeInTheDocument();
-  expect(screen.getAllByRole('heading')).toHaveLength(5);
+  expect(screen.getAllByRole('heading')).toHaveLength(4);
 
   expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Advanced' })).toBeInTheDocument();
@@ -228,7 +226,7 @@ test('should render - FeatureFlag enabled', async () => {
   expect(screen.getAllByRole('button')).toHaveLength(4);
 
   expect(screen.getAllByRole('textbox')).toHaveLength(4);
-  expect(screen.getAllByRole('combobox')).toHaveLength(3);
+  expect(screen.getAllByRole('combobox')).toHaveLength(2);
 
   expect(spyColorSchemeControlWrapper).toBeCalledWith(
     expect.objectContaining({ colorScheme: 'supersetColors' }),
@@ -247,10 +245,10 @@ test('should open advance', async () => {
   ).toBeInTheDocument();
 
   expect(screen.getAllByRole('textbox')).toHaveLength(4);
-  expect(screen.getAllByRole('combobox')).toHaveLength(3);
+  expect(screen.getAllByRole('combobox')).toHaveLength(2);
   userEvent.click(screen.getByRole('button', { name: 'Advanced' }));
   expect(screen.getAllByRole('textbox')).toHaveLength(5);
-  expect(screen.getAllByRole('combobox')).toHaveLength(3);
+  expect(screen.getAllByRole('combobox')).toHaveLength(2);
 });
 
 test('should close modal', async () => {
@@ -384,7 +382,7 @@ test('should show all roles', async () => {
     useRedux: true,
   });
 
-  expect(screen.getAllByRole('combobox')).toHaveLength(3);
+  expect(screen.getAllByRole('combobox')).toHaveLength(2);
   expect(
     screen.getByRole('combobox', { name: SupersetCore.t('Roles') }),
   ).toBeInTheDocument();
@@ -417,7 +415,7 @@ test('should show active owners with dashboard rbac', async () => {
     useRedux: true,
   });
 
-  expect(screen.getAllByRole('combobox')).toHaveLength(3);
+  expect(screen.getAllByRole('combobox')).toHaveLength(2);
   expect(
     screen.getByRole('combobox', { name: SupersetCore.t('Owners') }),
   ).toBeInTheDocument();

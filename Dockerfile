@@ -52,6 +52,7 @@ ENV LANG=C.UTF-8 \
     FLASK_APP="superset.app:create_app()" \
     PYTHONPATH="/app/pythonpath" \
     SUPERSET_HOME="/app/superset_home" \
+    SECRET_KEY="MbQeThWmYq3t6w9z$C&F)J@NcRfUjXn2r4u7x!A%D*G-KaPdSgVkYp3s6v8y/B?E" \
     SUPERSET_PORT=8088
 
 RUN mkdir -p ${PYTHONPATH} \

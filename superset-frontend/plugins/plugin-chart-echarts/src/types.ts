@@ -18,10 +18,9 @@
  */
 import React, { RefObject } from 'react';
 import {
+  BinaryQueryObjectFilterClause,
   ChartDataResponseResult,
   ChartProps,
-  ContextMenuFilters,
-  FilterState,
   HandlerFunction,
   PlainObject,
   QueryFormColumn,
@@ -124,13 +123,10 @@ export interface BaseTransformedProps<F> {
   onContextMenu?: (
     clientX: number,
     clientY: number,
-    filters?: ContextMenuFilters,
+    filters?: BinaryQueryObjectFilterClause[],
   ) => void;
-  setDataMask?: SetDataMaskHook;
-  filterState?: FilterState;
   refs: Refs;
   width: number;
-  emitCrossFilters?: boolean;
 }
 
 export type CrossFilterTransformedProps = {
@@ -146,9 +142,8 @@ export type ContextMenuTransformedProps = {
   onContextMenu?: (
     clientX: number,
     clientY: number,
-    filters?: ContextMenuFilters,
+    filters?: BinaryQueryObjectFilterClause[],
   ) => void;
-  setDataMask?: SetDataMaskHook;
 };
 
 export interface TitleFormData {

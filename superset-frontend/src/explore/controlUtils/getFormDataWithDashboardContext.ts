@@ -18,55 +18,31 @@
  */
 import isEqual from 'lodash/isEqual';
 import {
-  AdhocFilter,
-  ensureIsArray,
-  EXTRA_FORM_DATA_OVERRIDE_EXTRA_KEYS,
   EXTRA_FORM_DATA_OVERRIDE_REGULAR_MAPPINGS,
-  isAdhocColumn,
+  EXTRA_FORM_DATA_OVERRIDE_EXTRA_KEYS,
   isDefined,
-  isFreeFormAdhocFilter,
-  isSimpleAdhocFilter,
   JsonObject,
-  NO_TIME_RANGE,
-  QueryFormData,
+  ensureIsArray,
   QueryObjectFilterClause,
   SimpleAdhocFilter,
+  QueryFormData,
+  AdhocFilter,
+  isFreeFormAdhocFilter,
+  isSimpleAdhocFilter,
+  NO_TIME_RANGE,
 } from '@superset-ui/core';
-import { OPERATOR_ENUM_TO_OPERATOR_TYPE } from '../constants';
-import { translateToSql } from '../components/controls/FilterControl/utils/translateToSQL';
-import {
-  CLAUSES,
-  EXPRESSION_TYPES,
-} from '../components/controls/FilterControl/types';
 
 const simpleFilterToAdhoc = (
   filterClause: QueryObjectFilterClause,
-  clause: CLAUSES = CLAUSES.WHERE,
+  clause = 'where',
 ) => {
-  let result: AdhocFilter;
-  if (isAdhocColumn(filterClause.col)) {
-    result = {
-      expressionType: 'SQL',
-      clause,
-      sqlExpression: translateToSql({
-        expressionType: EXPRESSION_TYPES.SIMPLE,
-        subject: `(${filterClause.col.sqlExpression})`,
-        operator: filterClause.op,
-        comparator: 'val' in filterClause ? filterClause.val : undefined,
-      } as SimpleAdhocFilter),
-    };
-  } else {
-    result = {
-      expressionType: 'SIMPLE',
-      clause,
-      operator: filterClause.op,
-      operatorId: Object.entries(OPERATOR_ENUM_TO_OPERATOR_TYPE).find(
-        operatorEntry => operatorEntry[1].operation === filterClause.op,
-      )?.[0],
-      subject: filterClause.col,
-      comparator: 'val' in filterClause ? filterClause.val : undefined,
-    } as SimpleAdhocFilter;
-  }
+  const result = {
+    clause: clause.toUpperCase(),
+    expressionType: 'SIMPLE',
+    operator: filterClause.op,
+    subject: filterClause.col,
+    comparator: 'val' in filterClause ? filterClause.val : undefined,
+  } as SimpleAdhocFilter;
   if (filterClause.isExtra) {
     Object.assign(result, {
       isExtra: true,

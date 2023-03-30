@@ -66,10 +66,6 @@ import { WelcomeTable } from './welcome/types';
   risonRef.next_id = new RegExp(idrx, 'g');
 })();
 
-export const Actions = styled.div`
-  color: ${({ theme }) => theme.colors.grayscale.base};
-`;
-
 const createFetchResourceMethod =
   (method: string) =>
   (
@@ -371,34 +367,8 @@ export /* eslint-disable no-underscore-dangle */
 const isNeedsPassword = (payload: any) =>
   typeof payload === 'object' &&
   Array.isArray(payload._schema) &&
-  !!payload._schema?.find(
-    (e: string) => e === 'Must provide a password for the database',
-  );
-
-export /* eslint-disable no-underscore-dangle */
-const isNeedsSSHPassword = (payload: any) =>
-  typeof payload === 'object' &&
-  Array.isArray(payload._schema) &&
-  !!payload._schema?.find(
-    (e: string) => e === 'Must provide a password for the ssh tunnel',
-  );
-
-export /* eslint-disable no-underscore-dangle */
-const isNeedsSSHPrivateKey = (payload: any) =>
-  typeof payload === 'object' &&
-  Array.isArray(payload._schema) &&
-  !!payload._schema?.find(
-    (e: string) => e === 'Must provide a private key for the ssh tunnel',
-  );
-
-export /* eslint-disable no-underscore-dangle */
-const isNeedsSSHPrivateKeyPassword = (payload: any) =>
-  typeof payload === 'object' &&
-  Array.isArray(payload._schema) &&
-  !!payload._schema?.find(
-    (e: string) =>
-      e === 'Must provide a private key password for the ssh tunnel',
-  );
+  payload._schema.length === 1 &&
+  payload._schema[0] === 'Must provide a password for the database';
 
 export const isAlreadyExists = (payload: any) =>
   typeof payload === 'string' &&
@@ -409,35 +379,6 @@ export const getPasswordsNeeded = (errors: Record<string, any>[]) =>
     .map(error =>
       Object.entries(error.extra)
         .filter(([, payload]) => isNeedsPassword(payload))
-        .map(([fileName]) => fileName),
-    )
-    .flat();
-
-export const getSSHPasswordsNeeded = (errors: Record<string, any>[]) =>
-  errors
-    .map(error =>
-      Object.entries(error.extra)
-        .filter(([, payload]) => isNeedsSSHPassword(payload))
-        .map(([fileName]) => fileName),
-    )
-    .flat();
-
-export const getSSHPrivateKeysNeeded = (errors: Record<string, any>[]) =>
-  errors
-    .map(error =>
-      Object.entries(error.extra)
-        .filter(([, payload]) => isNeedsSSHPrivateKey(payload))
-        .map(([fileName]) => fileName),
-    )
-    .flat();
-
-export const getSSHPrivateKeyPasswordsNeeded = (
-  errors: Record<string, any>[],
-) =>
-  errors
-    .map(error =>
-      Object.entries(error.extra)
-        .filter(([, payload]) => isNeedsSSHPrivateKeyPassword(payload))
         .map(([fileName]) => fileName),
     )
     .flat();
@@ -460,12 +401,7 @@ export const hasTerminalValidation = (errors: Record<string, any>[]) =>
     if (noIssuesCodes.length === 0) return true;
 
     return !noIssuesCodes.every(
-      ([, payload]) =>
-        isNeedsPassword(payload) ||
-        isAlreadyExists(payload) ||
-        isNeedsSSHPassword(payload) ||
-        isNeedsSSHPrivateKey(payload) ||
-        isNeedsSSHPrivateKeyPassword(payload),
+      ([, payload]) => isNeedsPassword(payload) || isAlreadyExists(payload),
     );
   });
 

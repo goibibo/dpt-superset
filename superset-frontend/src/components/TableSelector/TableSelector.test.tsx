@@ -19,11 +19,12 @@
 
 import React from 'react';
 import { render, screen, waitFor, within } from 'spec/helpers/testing-library';
-import { queryClient } from 'src/views/QueryProvider';
-import fetchMock from 'fetch-mock';
+import { SupersetClient } from '@superset-ui/core';
 import { act } from 'react-dom/test-utils';
 import userEvent from '@testing-library/user-event';
 import TableSelector, { TableSelectorMultiple } from '.';
+
+const SupersetClientGet = jest.spyOn(SupersetClient, 'get');
 
 const createProps = (props = {}) => ({
   database: {
@@ -36,43 +37,37 @@ const createProps = (props = {}) => ({
   ...props,
 });
 
-const getSchemaMockFunction = () =>
+afterEach(() => {
+  jest.clearAllMocks();
+});
+
+const getSchemaMockFunction = async () =>
   ({
-    result: ['schema_a', 'schema_b'],
+    json: {
+      result: ['schema_a', 'schema_b'],
+    },
   } as any);
 
-const getTableMockFunction = () =>
+const getTableMockFunction = async () =>
   ({
-    count: 4,
-    result: [
-      { label: 'table_a', value: 'table_a' },
-      { label: 'table_b', value: 'table_b' },
-      { label: 'table_c', value: 'table_c' },
-      { label: 'table_d', value: 'table_d' },
-    ],
+    json: {
+      count: 4,
+      result: [
+        { label: 'table_a', value: 'table_a' },
+        { label: 'table_b', value: 'table_b' },
+        { label: 'table_c', value: 'table_c' },
+        { label: 'table_d', value: 'table_d' },
+      ],
+    },
   } as any);
-
-const databaseApiRoute = 'glob:*/api/v1/database/?*';
-const schemaApiRoute = 'glob:*/api/v1/database/*/schemas/?*';
-const tablesApiRoute = 'glob:*/api/v1/database/*/tables/*';
 
 const getSelectItemContainer = (select: HTMLElement) =>
   select.parentElement?.parentElement?.getElementsByClassName(
     'ant-select-selection-item',
   );
 
-beforeEach(() => {
-  queryClient.clear();
-  fetchMock.get(databaseApiRoute, { result: [] });
-});
-
-afterEach(() => {
-  fetchMock.reset();
-});
-
 test('renders with default props', async () => {
-  fetchMock.get(schemaApiRoute, { result: [] });
-  fetchMock.get(tablesApiRoute, getTableMockFunction());
+  SupersetClientGet.mockImplementation(getTableMockFunction);
 
   const props = createProps();
   render(<TableSelector {...props} />, { useRedux: true });
@@ -93,8 +88,7 @@ test('renders with default props', async () => {
 });
 
 test('renders table options', async () => {
-  fetchMock.get(schemaApiRoute, { result: ['test_schema'] });
-  fetchMock.get(tablesApiRoute, getTableMockFunction());
+  SupersetClientGet.mockImplementation(getTableMockFunction);
 
   const props = createProps();
   render(<TableSelector {...props} />, { useRedux: true });
@@ -111,8 +105,7 @@ test('renders table options', async () => {
 });
 
 test('renders disabled without schema', async () => {
-  fetchMock.get(schemaApiRoute, { result: [] });
-  fetchMock.get(tablesApiRoute, getTableMockFunction());
+  SupersetClientGet.mockImplementation(getTableMockFunction);
 
   const props = createProps();
   render(<TableSelector {...props} schema={undefined} />, { useRedux: true });
@@ -125,7 +118,7 @@ test('renders disabled without schema', async () => {
 });
 
 test('table options are notified after schema selection', async () => {
-  fetchMock.get(schemaApiRoute, getSchemaMockFunction());
+  SupersetClientGet.mockImplementation(getSchemaMockFunction);
 
   const callback = jest.fn();
   const props = createProps({
@@ -149,7 +142,7 @@ test('table options are notified after schema selection', async () => {
     await screen.findByRole('option', { name: 'schema_b' }),
   ).toBeInTheDocument();
 
-  fetchMock.get(tablesApiRoute, getTableMockFunction());
+  SupersetClientGet.mockImplementation(getTableMockFunction);
 
   act(() => {
     userEvent.click(screen.getAllByText('schema_a')[1]);
@@ -166,8 +159,7 @@ test('table options are notified after schema selection', async () => {
 });
 
 test('table select retain value if not in SQL Lab mode', async () => {
-  fetchMock.get(schemaApiRoute, { result: ['test_schema'] });
-  fetchMock.get(tablesApiRoute, getTableMockFunction());
+  SupersetClientGet.mockImplementation(getTableMockFunction);
 
   const callback = jest.fn();
   const props = createProps({
@@ -190,7 +182,7 @@ test('table select retain value if not in SQL Lab mode', async () => {
     await screen.findByRole('option', { name: 'table_a' }),
   ).toBeInTheDocument();
 
-  await waitFor(() => {
+  act(() => {
     userEvent.click(screen.getAllByText('table_a')[1]);
   });
 
@@ -207,8 +199,7 @@ test('table select retain value if not in SQL Lab mode', async () => {
 });
 
 test('table multi select retain all the values selected', async () => {
-  fetchMock.get(schemaApiRoute, { result: ['test_schema'] });
-  fetchMock.get(tablesApiRoute, getTableMockFunction());
+  SupersetClientGet.mockImplementation(getTableMockFunction);
 
   const callback = jest.fn();
   const props = createProps({
@@ -226,19 +217,23 @@ test('table multi select retain all the values selected', async () => {
 
   userEvent.click(tableSelect);
 
-  await waitFor(async () => {
-    const item = await screen.findAllByText('table_b');
+  act(() => {
+    const item = screen.getAllByText('table_b');
     userEvent.click(item[item.length - 1]);
   });
 
-  await waitFor(async () => {
-    const item = await screen.findAllByText('table_c');
+  act(() => {
+    const item = screen.getAllByText('table_c');
     userEvent.click(item[item.length - 1]);
   });
 
-  const selection1 = await screen.findByRole('option', { name: 'table_b' });
-  expect(selection1).toHaveAttribute('aria-selected', 'true');
+  expect(screen.getByRole('option', { name: 'table_b' })).toHaveAttribute(
+    'aria-selected',
+    'true',
+  );
 
-  const selection2 = await screen.findByRole('option', { name: 'table_c' });
-  expect(selection2).toHaveAttribute('aria-selected', 'true');
+  expect(screen.getByRole('option', { name: 'table_c' })).toHaveAttribute(
+    'aria-selected',
+    'true',
+  );
 });

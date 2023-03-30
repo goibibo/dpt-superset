@@ -32,6 +32,7 @@ import FilterDivider from './FilterControls/FilterDivider';
 
 export const useFilterControlFactory = (
   dataMaskSelected: DataMaskStateWithId,
+  focusedFilterId: string | undefined,
   onFilterSelectionChange: (filter: Filter, dataMask: DataMask) => void,
 ) => {
   const filters = useFilters();
@@ -66,6 +67,7 @@ export const useFilterControlFactory = (
         <FilterControl
           dataMaskSelected={dataMaskSelected}
           filter={filter}
+          focusedFilterId={focusedFilterId}
           onFilterSelectionChange={onFilterSelectionChange}
           inView={false}
           orientation={filterBarOrientation}
@@ -73,7 +75,12 @@ export const useFilterControlFactory = (
         />
       );
     },
-    [filtersWithValues, dataMaskSelected, onFilterSelectionChange],
+    [
+      filtersWithValues,
+      dataMaskSelected,
+      focusedFilterId,
+      onFilterSelectionChange,
+    ],
   );
 
   return { filterControlFactory, filtersWithValues };

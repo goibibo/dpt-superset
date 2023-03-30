@@ -25,7 +25,10 @@ import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 
-import AdhocFilter from 'src/explore/components/controls/FilterControl/AdhocFilter';
+import AdhocFilter, {
+  EXPRESSION_TYPES,
+  CLAUSES,
+} from 'src/explore/components/controls/FilterControl/AdhocFilter';
 import {
   AGGREGATES,
   Operators,
@@ -43,7 +46,6 @@ import AdhocFilterEditPopoverSimpleTabContent, {
   useSimpleTabFilterProps,
   Props,
 } from '.';
-import { CLAUSES, EXPRESSION_TYPES } from '../types';
 
 const simpleAdhocFilter = new AdhocFilter({
   expressionType: EXPRESSION_TYPES.SIMPLE,

@@ -19,25 +19,21 @@
 /* eslint-disable camelcase */
 import {
   AnnotationLayer,
-  AxisType,
   CategoricalColorNamespace,
   GenericDataType,
-  getMetricLabel,
   getNumberFormatter,
-  getXAxisLabel,
-  isDefined,
   isEventAnnotationLayer,
   isFormulaAnnotationLayer,
   isIntervalAnnotationLayer,
-  isPhysicalColumn,
   isTimeseriesAnnotationLayer,
-  t,
   TimeseriesChartDataResponseResult,
+  t,
+  AxisType,
+  getXAxisLabel,
+  isPhysicalColumn,
+  isDefined,
 } from '@superset-ui/core';
-import {
-  extractExtraMetrics,
-  isDerivedSeries,
-} from '@superset-ui/chart-controls';
+import { isDerivedSeries } from '@superset-ui/chart-controls';
 import { EChartsCoreOption, SeriesOption } from 'echarts';
 import { ZRLineType } from 'echarts/types/src/util/types';
 import {
@@ -118,39 +114,39 @@ export default function transformProps(
     colorScheme,
     contributionMode,
     forecastEnabled,
-    groupby,
     legendOrientation,
     legendType,
     legendMargin,
     logAxis,
     markerEnabled,
     markerSize,
-    minorSplitLine,
-    onlyTotal,
     opacity,
-    orientation,
-    percentageThreshold,
-    richTooltip,
+    minorSplitLine,
     seriesType,
     showLegend,
-    showValue,
-    sliceId,
-    timeGrainSqla,
     stack,
+    truncateYAxis,
+    yAxisFormat,
+    xAxisTimeFormat,
+    yAxisBounds,
     tooltipTimeFormat,
     tooltipSortByMetric,
-    truncateYAxis,
+    zoomable,
+    richTooltip,
     xAxis: xAxisOrig,
     xAxisLabelRotation,
-    xAxisTimeFormat,
+    groupby,
+    showValue,
+    onlyTotal,
+    percentageThreshold,
     xAxisTitle,
-    xAxisTitleMargin,
-    yAxisBounds,
-    yAxisFormat,
     yAxisTitle,
+    xAxisTitleMargin,
     yAxisTitleMargin,
     yAxisTitlePosition,
-    zoomable,
+    sliceId,
+    timeGrainSqla,
+    orientation,
   }: EchartsTimeseriesFormData = { ...DEFAULT_FORM_DATA, ...formData };
   const refs: Refs = {};
 
@@ -172,14 +168,9 @@ export default function transformProps(
       xAxisCol: xAxisLabel,
     },
   );
-  const extraMetricLabels = extractExtraMetrics(chartProps.rawFormData).map(
-    getMetricLabel,
-  );
-
   const rawSeries = extractSeries(rebasedData, {
     fillNeighborValue: stack && !forecastEnabled ? 0 : undefined,
     xAxis: xAxisLabel,
-    extraMetricLabels,
     removeNulls: seriesType === EchartsTimeseriesSeriesType.Scatter,
     stack,
     totalStackedValues,
@@ -379,7 +370,6 @@ export default function transformProps(
   if (isHorizontal) {
     [xAxis, yAxis] = [yAxis, xAxis];
     [padding.bottom, padding.left] = [padding.left, padding.bottom];
-    yAxis.inverse = true;
   }
 
   const echartOptions: EChartsCoreOption = {

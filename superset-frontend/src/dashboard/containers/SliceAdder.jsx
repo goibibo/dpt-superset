@@ -40,6 +40,7 @@ function mapStateToProps(
     errorMessage: sliceEntities.errorMessage,
     lastUpdated: sliceEntities.lastUpdated,
     editMode: dashboardState.editMode,
+    filterboxMigrationState: dashboardState.filterboxMigrationState,
   };
 }
 

@@ -19,17 +19,9 @@
 import { rgb } from 'd3-color';
 
 export default function transformProps(chartProps) {
-  const {
-    width,
-    height,
-    formData,
-    queriesData,
-    hooks,
-    inContextMenu,
-    filterState,
-    emitCrossFilters,
-  } = chartProps;
-  const { onContextMenu, setDataMask } = hooks;
+  const { width, height, formData, queriesData, hooks, inContextMenu } =
+    chartProps;
+  const { onContextMenu } = hooks;
   const {
     countryFieldtype,
     entity,
@@ -57,9 +49,6 @@ export default function transformProps(chartProps) {
     colorScheme,
     sliceId,
     onContextMenu,
-    setDataMask,
     inContextMenu,
-    filterState,
-    emitCrossFilters,
   };
 }

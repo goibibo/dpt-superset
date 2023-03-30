@@ -17,7 +17,7 @@
  * under the License.
  */
 import PropTypes from 'prop-types';
-import { CLAUSES, EXPRESSION_TYPES } from './types';
+import { EXPRESSION_TYPES, CLAUSES } from './AdhocFilter';
 
 export default PropTypes.oneOfType([
   PropTypes.shape({

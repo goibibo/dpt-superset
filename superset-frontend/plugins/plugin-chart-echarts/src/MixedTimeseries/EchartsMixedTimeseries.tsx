@@ -51,14 +51,10 @@ export default function EchartsMixedTimeseries({
     [seriesBreakdown],
   );
 
-  const getCrossFilterDataMask = useCallback(
-    (seriesName, seriesIndex) => {
-      const selected: string[] = Object.values(selectedValues || {});
-      let values: string[];
-      if (selected.includes(seriesName)) {
-        values = selected.filter(v => v !== seriesName);
-      } else {
-        values = [seriesName];
+  const handleChange = useCallback(
+    (values: string[], seriesIndex: number) => {
+      if (!emitCrossFilters) {
+        return;
       }
 
       const currentGroupBy = isFirstQuery(seriesIndex) ? groupby : groupbyB;
@@ -67,57 +63,51 @@ export default function EchartsMixedTimeseries({
         .map(value => currentLabelMap?.[value])
         .filter(value => !!value);
 
-      return {
-        dataMask: {
-          extraFormData: {
-            // @ts-ignore
-            filters:
-              values.length === 0
-                ? []
-                : [
-                    ...currentGroupBy.map((col, idx) => {
-                      const val: DataRecordValue[] = groupbyValues.map(
-                        v => v[idx],
-                      );
-                      if (val === null || val === undefined)
-                        return {
-                          col,
-                          op: 'IS NULL' as const,
-                        };
+      setDataMask({
+        extraFormData: {
+          // @ts-ignore
+          filters:
+            values.length === 0
+              ? []
+              : [
+                  ...currentGroupBy.map((col, idx) => {
+                    const val: DataRecordValue[] = groupbyValues.map(
+                      v => v[idx],
+                    );
+                    if (val === null || val === undefined)
                       return {
                         col,
-                        op: 'IN' as const,
-                        val: val as (string | number | boolean)[],
+                        op: 'IS NULL',
                       };
-                    }),
-                  ],
-          },
-          filterState: {
-            value: !groupbyValues.length ? null : groupbyValues,
-            selectedValues: values.length ? values : null,
-          },
+                    return {
+                      col,
+                      op: 'IN',
+                      val: val as (string | number | boolean)[],
+                    };
+                  }),
+                ],
         },
-        isCurrentValueSelected: selected.includes(seriesName),
-      };
+        filterState: {
+          value: !groupbyValues.length ? null : groupbyValues,
+          selectedValues: values.length ? values : null,
+        },
+      });
     },
-    [groupby, groupbyB, isFirstQuery, labelMap, labelMapB, selectedValues],
-  );
-
-  const handleChange = useCallback(
-    (seriesName: string, seriesIndex: number) => {
-      if (!emitCrossFilters) {
-        return;
-      }
-
-      setDataMask(getCrossFilterDataMask(seriesName, seriesIndex).dataMask);
-    },
-    [emitCrossFilters, setDataMask, getCrossFilterDataMask],
+    [groupby, groupbyB, labelMap, labelMapB, setDataMask, selectedValues],
   );
 
   const eventHandlers: EventHandlers = {
     click: props => {
       const { seriesName, seriesIndex } = props;
-      handleChange(seriesName, seriesIndex);
+      const values: string[] = Object.values(selectedValues || {});
+      if (values.includes(seriesName)) {
+        handleChange(
+          values.filter(v => v !== seriesName),
+          seriesIndex,
+        );
+      } else {
+        handleChange([seriesName], seriesIndex);
+      }
     },
     mouseout: () => {
       currentSeries.name = '';
@@ -128,18 +118,18 @@ export default function EchartsMixedTimeseries({
     contextmenu: eventParams => {
       if (onContextMenu) {
         eventParams.event.stop();
-        const { data, seriesName, seriesIndex } = eventParams;
-        const pointerEvent = eventParams.event.event;
-        const drillToDetailFilters: BinaryQueryObjectFilterClause[] = [];
+        const { data, seriesIndex } = eventParams;
         if (data) {
+          const pointerEvent = eventParams.event.event;
           const values = [
             ...(eventParams.name ? [eventParams.name] : []),
             ...(isFirstQuery(seriesIndex) ? labelMap : labelMapB)[
               eventParams.seriesName
             ],
           ];
+          const filters: BinaryQueryObjectFilterClause[] = [];
           if (xAxis.type === AxisType.time) {
-            drillToDetailFilters.push({
+            filters.push({
               col:
                 xAxis.label === DTTM_ALIAS
                   ? formData.granularitySqla
@@ -156,18 +146,15 @@ export default function EchartsMixedTimeseries({
               ? formData.groupby
               : formData.groupbyB),
           ].forEach((dimension, i) =>
-            drillToDetailFilters.push({
+            filters.push({
               col: dimension,
               op: '==',
               val: values[i],
               formattedVal: String(values[i]),
             }),
           );
+          onContextMenu(pointerEvent.clientX, pointerEvent.clientY, filters);
         }
-        onContextMenu(pointerEvent.clientX, pointerEvent.clientY, {
-          drillToDetail: drillToDetailFilters,
-          crossFilter: getCrossFilterDataMask(seriesName, seriesIndex),
-        });
       }
     },
   };

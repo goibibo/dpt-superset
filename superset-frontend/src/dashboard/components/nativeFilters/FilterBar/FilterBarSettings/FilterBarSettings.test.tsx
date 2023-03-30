@@ -33,6 +33,7 @@ const initialState: { dashboardInfo: DashboardInfo } = {
     userId: '1',
     metadata: {
       native_filter_configuration: {},
+      show_native_filters: true,
       chart_configuration: {},
       color_scheme: '',
       color_namespace: '',

@@ -3,7 +3,7 @@ export const dashboardResponse = {
     {
       title: 'Baseline Charts',
       charts: {
-        '376': {
+        '380': {
           filter: [],
           groupBy: [],
           metricDetails: {

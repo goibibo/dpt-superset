@@ -40,7 +40,7 @@ import { safeStringify } from 'src/utils/safeStringify';
 import { allowCrossDomain as domainShardingEnabled } from 'src/utils/hostNamesConfig';
 import { updateDataMask } from 'src/dataMask/actions';
 import { waitForAsyncData } from 'src/middleware/asyncEvent';
-
+const TIME_OUT = 60;
 export const CHART_UPDATE_STARTED = 'CHART_UPDATE_STARTED';
 export function chartUpdateStarted(queryController, latestQueryFormData, key) {
   return {
@@ -245,7 +245,7 @@ export async function getChartDataRequest({
 
 export function runAnnotationQuery({
   annotation,
-  timeout = 60,
+  timeout = TIME_OUT,
   formData = null,
   key,
   isDashboardRequest = false,
@@ -367,7 +367,7 @@ export function addChart(chart, key) {
 export function exploreJSON(
   formData,
   force = false,
-  timeout = 60,
+  timeout = TIME_OUT,
   key,
   method,
   dashboardId,
@@ -375,6 +375,8 @@ export function exploreJSON(
 ) {
   return async dispatch => {
     const logStart = Logger.getTimestamp();
+    console.log("🚀 ~ file: chartAction.js:378 ~ logStart:", logStart);
+    
     const controller = new AbortController();
 
     const requestParams = {
@@ -396,11 +398,14 @@ export function exploreJSON(
       requestParams,
       ownState,
     });
+    console.log("🚀 ~ file: chartAction.js:378 ~ logStart:--> chart update started", logStart);
 
     dispatch(chartUpdateStarted(controller, formData, key));
 
     const chartDataRequestCaught = chartDataRequest
       .then(({ response, json }) => {
+    console.log("🚀 ~ file: chartAction.js:378 ~ logStart:--> chart request caught", logStart);
+
         if (isFeatureEnabled(FeatureFlag.GLOBAL_ASYNC_QUERIES)) {
           // deal with getChartDataRequest transforming the response data
           const result = 'result' in json ? json.result : json;
@@ -424,6 +429,8 @@ export function exploreJSON(
         return json.result;
       })
       .then(queriesResponse => {
+    console.log("🚀 ~ file: chartAction.js:378 ~ logStart:--> chart response", logStart);
+
         queriesResponse.forEach(resultItem =>
           dispatch(
             logEvent(LOG_ACTIONS_LOAD_CHART, {
@@ -445,6 +452,8 @@ export function exploreJSON(
             }),
           ),
         );
+    console.log("🚀 ~ file: chartAction.js:378 ~ logStart:--> chart update succeeded", logStart);
+
         return dispatch(chartUpdateSucceeded(queriesResponse, key));
       })
       .catch(response => {
@@ -510,7 +519,7 @@ export const GET_SAVED_CHART = 'GET_SAVED_CHART';
 export function getSavedChart(
   formData,
   force = false,
-  timeout = 60,
+  timeout = TIME_OUT,
   key,
   dashboardId,
   ownState,
@@ -540,7 +549,7 @@ export const POST_CHART_FORM_DATA = 'POST_CHART_FORM_DATA';
 export function postChartFormData(
   formData,
   force = false,
-  timeout = 60,
+  timeout = TIME_OUT,
   key,
   dashboardId,
   ownState,

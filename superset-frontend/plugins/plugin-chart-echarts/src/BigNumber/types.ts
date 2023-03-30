@@ -19,8 +19,8 @@
 
 import { EChartsCoreOption } from 'echarts';
 import {
+  BinaryQueryObjectFilterClause,
   ChartDataResponseResult,
-  ContextMenuFilters,
   DataRecordValue,
   NumberFormatter,
   QueryFormData,
@@ -92,7 +92,7 @@ export type BigNumberVizProps = {
   onContextMenu?: (
     clientX: number,
     clientY: number,
-    filters?: ContextMenuFilters,
+    filters?: BinaryQueryObjectFilterClause[],
   ) => void;
   xValueFormatter?: TimeFormatter;
   formData?: BigNumberWithTrendlineFormData;

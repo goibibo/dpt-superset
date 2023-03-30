@@ -409,6 +409,15 @@ class SliceHeaderControls extends React.PureComponent<
         selectable={false}
         data-test={`slice_${slice.slice_id}-menu`}
       >
+        {(slice?.slice_id || slice.viz_type) && (
+          <>
+            <Menu.Item disabled key={slice.slice_id}>
+              Slice ID: {slice.slice_id} | Viz: {slice.viz_type}
+            </Menu.Item>
+            <Menu.Divider />
+          </>
+        )}
+
         <Menu.Item
           key={MENU_KEYS.FORCE_REFRESH}
           disabled={this.props.chartStatus === 'loading'}

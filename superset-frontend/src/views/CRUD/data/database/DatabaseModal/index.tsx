@@ -555,29 +555,11 @@ const DatabaseModal: FunctionComponent<DatabaseModalProps> = ({
   const [isLoading, setLoading] = useState<boolean>(false);
   const [testInProgress, setTestInProgress] = useState<boolean>(false);
   const [passwords, setPasswords] = useState<Record<string, string>>({});
-  const [sshTunnelPasswords, setSSHTunnelPasswords] = useState<
-    Record<string, string>
-  >({});
-  const [sshTunnelPrivateKeys, setSSHTunnelPrivateKeys] = useState<
-    Record<string, string>
-  >({});
-  const [sshTunnelPrivateKeyPasswords, setSSHTunnelPrivateKeyPasswords] =
-    useState<Record<string, string>>({});
   const [confirmedOverwrite, setConfirmedOverwrite] = useState<boolean>(false);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [importingModal, setImportingModal] = useState<boolean>(false);
   const [importingErrorMessage, setImportingErrorMessage] = useState<string>();
   const [passwordFields, setPasswordFields] = useState<string[]>([]);
-  const [sshTunnelPasswordFields, setSSHTunnelPasswordFields] = useState<
-    string[]
-  >([]);
-  const [sshTunnelPrivateKeyFields, setSSHTunnelPrivateKeyFields] = useState<
-    string[]
-  >([]);
-  const [
-    sshTunnelPrivateKeyPasswordFields,
-    setSSHTunnelPrivateKeyPasswordFields,
-  ] = useState<string[]>([]);
 
   const SSHTunnelSwitchComponent =
     extensionsRegistry.get('ssh_tunnel.form.switch') ?? SSHTunnelSwitch;
@@ -675,13 +657,7 @@ const DatabaseModal: FunctionComponent<DatabaseModalProps> = ({
     setImportingModal(false);
     setImportingErrorMessage('');
     setPasswordFields([]);
-    setSSHTunnelPasswordFields([]);
-    setSSHTunnelPrivateKeyFields([]);
-    setSSHTunnelPrivateKeyPasswordFields([]);
     setPasswords({});
-    setSSHTunnelPasswords({});
-    setSSHTunnelPrivateKeys({});
-    setSSHTunnelPrivateKeyPasswords({});
     setConfirmedOverwrite(false);
     setUseSSHTunneling(false);
     onHide();
@@ -702,9 +678,6 @@ const DatabaseModal: FunctionComponent<DatabaseModalProps> = ({
     state: {
       alreadyExists,
       passwordsNeeded,
-      sshPasswordNeeded,
-      sshPrivateKeyNeeded,
-      sshPrivateKeyPasswordNeeded,
       loading: importLoading,
       failed: importErrored,
     },
@@ -838,9 +811,6 @@ const DatabaseModal: FunctionComponent<DatabaseModalProps> = ({
       const dbId = await importResource(
         fileList[0].originFileObj,
         passwords,
-        sshTunnelPasswords,
-        sshTunnelPrivateKeys,
-        sshTunnelPrivateKeyPasswords,
         confirmedOverwrite,
       );
       if (dbId) {
@@ -1013,13 +983,7 @@ const DatabaseModal: FunctionComponent<DatabaseModalProps> = ({
       setImportingModal(false);
       setImportingErrorMessage('');
       setPasswordFields([]);
-      setSSHTunnelPasswordFields([]);
-      setSSHTunnelPrivateKeyFields([]);
-      setSSHTunnelPrivateKeyPasswordFields([]);
       setPasswords({});
-      setSSHTunnelPasswords({});
-      setSSHTunnelPrivateKeys({});
-      setSSHTunnelPrivateKeyPasswords({});
     }
     setDB({ type: ActionType.reset });
     setFileList([]);
@@ -1029,13 +993,7 @@ const DatabaseModal: FunctionComponent<DatabaseModalProps> = ({
     if (
       importLoading ||
       (alreadyExists.length && !confirmedOverwrite) ||
-      (passwordsNeeded.length && JSON.stringify(passwords) === '{}') ||
-      (sshPasswordNeeded.length &&
-        JSON.stringify(sshTunnelPasswords) === '{}') ||
-      (sshPrivateKeyNeeded.length &&
-        JSON.stringify(sshTunnelPrivateKeys) === '{}') ||
-      (sshPrivateKeyPasswordNeeded.length &&
-        JSON.stringify(sshTunnelPrivateKeyPasswords) === '{}')
+      (passwordsNeeded.length && JSON.stringify(passwords) === '{}')
     )
       return true;
     return false;
@@ -1140,24 +1098,13 @@ const DatabaseModal: FunctionComponent<DatabaseModalProps> = ({
       !importLoading &&
       !alreadyExists.length &&
       !passwordsNeeded.length &&
-      !sshPasswordNeeded.length &&
-      !sshPrivateKeyNeeded.length &&
-      !sshPrivateKeyPasswordNeeded.length &&
       !isLoading && // This prevents a double toast for non-related imports
       !importErrored // This prevents a success toast on error
     ) {
       onClose();
       addSuccessToast(t('Database connected'));
     }
-  }, [
-    alreadyExists,
-    passwordsNeeded,
-    importLoading,
-    importErrored,
-    sshPasswordNeeded,
-    sshPrivateKeyNeeded,
-    sshPrivateKeyPasswordNeeded,
-  ]);
+  }, [alreadyExists, passwordsNeeded, importLoading, importErrored]);
 
   useEffect(() => {
     if (show) {
@@ -1207,33 +1154,15 @@ const DatabaseModal: FunctionComponent<DatabaseModalProps> = ({
   }, [passwordsNeeded]);
 
   useEffect(() => {
-    setSSHTunnelPasswordFields([...sshPasswordNeeded]);
-  }, [sshPasswordNeeded]);
-
-  useEffect(() => {
-    setSSHTunnelPrivateKeyFields([...sshPrivateKeyNeeded]);
-  }, [sshPrivateKeyNeeded]);
-
-  useEffect(() => {
-    setSSHTunnelPrivateKeyPasswordFields([...sshPrivateKeyPasswordNeeded]);
-  }, [sshPrivateKeyPasswordNeeded]);
-
-  useEffect(() => {
-    if (db && isSSHTunneling) {
+    if (db) {
       setUseSSHTunneling(!isEmpty(db?.ssh_tunnel));
     }
-  }, [db, isSSHTunneling]);
+  }, [db]);
 
   const onDbImport = async (info: UploadChangeParam) => {
     setImportingErrorMessage('');
     setPasswordFields([]);
-    setSSHTunnelPasswordFields([]);
-    setSSHTunnelPrivateKeyFields([]);
-    setSSHTunnelPrivateKeyPasswordFields([]);
     setPasswords({});
-    setSSHTunnelPasswords({});
-    setSSHTunnelPrivateKeys({});
-    setSSHTunnelPrivateKeyPasswords({});
     setImportingModal(true);
     setFileList([
       {
@@ -1246,33 +1175,15 @@ const DatabaseModal: FunctionComponent<DatabaseModalProps> = ({
     const dbId = await importResource(
       info.file.originFileObj,
       passwords,
-      sshTunnelPasswords,
-      sshTunnelPrivateKeys,
-      sshTunnelPrivateKeyPasswords,
       confirmedOverwrite,
     );
     if (dbId) onDatabaseAdd?.();
   };
 
   const passwordNeededField = () => {
-    if (
-      !passwordFields.length &&
-      !sshTunnelPasswordFields.length &&
-      !sshTunnelPrivateKeyFields.length &&
-      !sshTunnelPrivateKeyPasswordFields.length
-    )
-      return null;
+    if (!passwordFields.length) return null;
 
-    const files = [
-      ...new Set([
-        ...passwordFields,
-        ...sshTunnelPasswordFields,
-        ...sshTunnelPrivateKeyFields,
-        ...sshTunnelPrivateKeyPasswordFields,
-      ]),
-    ];
-
-    return files.map(database => (
+    return passwordFields.map(database => (
       <>
         <StyledAlertMargin>
           <Alert
@@ -1286,77 +1197,19 @@ const DatabaseModal: FunctionComponent<DatabaseModalProps> = ({
             )}
           />
         </StyledAlertMargin>
-        {passwordFields?.indexOf(database) >= 0 && (
-          <ValidatedInput
-            id="password_needed"
-            name="password_needed"
-            required
-            value={passwords[database]}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-              setPasswords({ ...passwords, [database]: event.target.value })
-            }
-            validationMethods={{ onBlur: () => {} }}
-            errorMessage={validationErrors?.password_needed}
-            label={t('%s PASSWORD', database.slice(10))}
-            css={formScrollableStyles}
-          />
-        )}
-        {sshTunnelPasswordFields?.indexOf(database) >= 0 && (
-          <ValidatedInput
-            id="ssh_tunnel_password_needed"
-            name="ssh_tunnel_password_needed"
-            required
-            value={sshTunnelPasswords[database]}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-              setSSHTunnelPasswords({
-                ...sshTunnelPasswords,
-                [database]: event.target.value,
-              })
-            }
-            validationMethods={{ onBlur: () => {} }}
-            errorMessage={validationErrors?.ssh_tunnel_password_needed}
-            label={t('%s SSH TUNNEL PASSWORD', database.slice(10))}
-            css={formScrollableStyles}
-          />
-        )}
-        {sshTunnelPrivateKeyFields?.indexOf(database) >= 0 && (
-          <ValidatedInput
-            id="ssh_tunnel_private_key_needed"
-            name="ssh_tunnel_private_key_needed"
-            required
-            value={sshTunnelPrivateKeys[database]}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-              setSSHTunnelPrivateKeys({
-                ...sshTunnelPrivateKeys,
-                [database]: event.target.value,
-              })
-            }
-            validationMethods={{ onBlur: () => {} }}
-            errorMessage={validationErrors?.ssh_tunnel_private_key_needed}
-            label={t('%s SSH TUNNEL PRIVATE KEY', database.slice(10))}
-            css={formScrollableStyles}
-          />
-        )}
-        {sshTunnelPrivateKeyPasswordFields?.indexOf(database) >= 0 && (
-          <ValidatedInput
-            id="ssh_tunnel_private_key_password_needed"
-            name="ssh_tunnel_private_key_password_needed"
-            required
-            value={sshTunnelPrivateKeyPasswords[database]}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-              setSSHTunnelPrivateKeyPasswords({
-                ...sshTunnelPrivateKeyPasswords,
-                [database]: event.target.value,
-              })
-            }
-            validationMethods={{ onBlur: () => {} }}
-            errorMessage={
-              validationErrors?.ssh_tunnel_private_key_password_needed
-            }
-            label={t('%s SSH TUNNEL PRIVATE KEY PASSWORD', database.slice(10))}
-            css={formScrollableStyles}
-          />
-        )}
+        <ValidatedInput
+          id="password_needed"
+          name="password_needed"
+          required
+          value={passwords[database]}
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+            setPasswords({ ...passwords, [database]: event.target.value })
+          }
+          validationMethods={{ onBlur: () => {} }}
+          errorMessage={validationErrors?.password_needed}
+          label={t('%s PASSWORD', database.slice(10))}
+          css={formScrollableStyles}
+        />
       </>
     ));
   };
@@ -1532,69 +1385,6 @@ const DatabaseModal: FunctionComponent<DatabaseModalProps> = ({
     </StyledBtns>
   );
 
-  const renderDatabaseConnectionForm = () => (
-    <>
-      <DatabaseConnectionForm
-        isEditMode={isEditMode}
-        db={db as DatabaseObject}
-        sslForced={sslForced}
-        dbModel={dbModel}
-        onAddTableCatalog={() => {
-          setDB({ type: ActionType.addTableCatalogSheet });
-        }}
-        onQueryChange={({ target }: { target: HTMLInputElement }) =>
-          onChange(ActionType.queryChange, {
-            name: target.name,
-            value: target.value,
-          })
-        }
-        onExtraInputChange={({ target }: { target: HTMLInputElement }) =>
-          onChange(ActionType.extraInputChange, {
-            name: target.name,
-            value: target.value,
-          })
-        }
-        onRemoveTableCatalog={(idx: number) => {
-          setDB({
-            type: ActionType.removeTableCatalogSheet,
-            payload: { indexToDelete: idx },
-          });
-        }}
-        onParametersChange={({ target }: { target: HTMLInputElement }) =>
-          onChange(ActionType.parametersChange, {
-            type: target.type,
-            name: target.name,
-            checked: target.checked,
-            value: target.value,
-          })
-        }
-        onChange={({ target }: { target: HTMLInputElement }) =>
-          onChange(ActionType.textChange, {
-            name: target.name,
-            value: target.value,
-          })
-        }
-        getValidation={() => getValidation(db)}
-        validationErrors={validationErrors}
-        getPlaceholder={getPlaceholder}
-      />
-      <SSHTunnelContainer>
-        <SSHTunnelSwitchComponent
-          isEditMode={isEditMode}
-          dbFetched={dbFetched}
-          disableSSHTunnelingForEngine={disableSSHTunnelingForEngine}
-          useSSHTunneling={useSSHTunneling}
-          setUseSSHTunneling={setUseSSHTunneling}
-          setDB={setDB}
-          isSSHTunneling={isSSHTunneling}
-        />
-      </SSHTunnelContainer>
-      {useSSHTunneling && (
-        <SSHTunnelContainer>{renderSSHTunnelForm()}</SSHTunnelContainer>
-      )}
-    </>
-  );
-
   const renderFinishState = () => {
     if (!editNewDb) {
       return (
@@ -1631,17 +1421,54 @@ const DatabaseModal: FunctionComponent<DatabaseModalProps> = ({
         />
       );
     }
-    return renderDatabaseConnectionForm();
+    return (
+      <DatabaseConnectionForm
+        isEditMode
+        sslForced={sslForced}
+        dbModel={dbModel}
+        db={db as DatabaseObject}
+        onParametersChange={({ target }: { target: HTMLInputElement }) =>
+          onChange(ActionType.parametersChange, {
+            type: target.type,
+            name: target.name,
+            checked: target.checked,
+            value: target.value,
+          })
+        }
+        onExtraInputChange={({ target }: { target: HTMLInputElement }) =>
+          onChange(ActionType.extraInputChange, {
+            name: target.name,
+            value: target.value,
+          })
+        }
+        onChange={({ target }: { target: HTMLInputElement }) =>
+          onChange(ActionType.textChange, {
+            name: target.name,
+            value: target.value,
+          })
+        }
+        onQueryChange={({ target }: { target: HTMLInputElement }) =>
+          onChange(ActionType.queryChange, {
+            name: target.name,
+            value: target.value,
+          })
+        }
+        onAddTableCatalog={() =>
+          setDB({ type: ActionType.addTableCatalogSheet })
+        }
+        onRemoveTableCatalog={(idx: number) =>
+          setDB({
+            type: ActionType.removeTableCatalogSheet,
+            payload: { indexToDelete: idx },
+          })
+        }
+        getValidation={() => getValidation(db)}
+        validationErrors={validationErrors}
+      />
+    );
   };
 
-  if (
-    fileList.length > 0 &&
-    (alreadyExists.length ||
-      passwordFields.length ||
-      sshTunnelPasswordFields.length ||
-      sshTunnelPrivateKeyFields.length ||
-      sshTunnelPrivateKeyPasswordFields.length)
-  ) {
+  if (fileList.length > 0 && (alreadyExists.length || passwordFields.length)) {
     return (
       <Modal
         css={(theme: SupersetTheme) => [
@@ -1777,7 +1604,49 @@ const DatabaseModal: FunctionComponent<DatabaseModalProps> = ({
               )}
             </StyledAlignment>
           ) : (
-            renderDatabaseConnectionForm()
+            <DatabaseConnectionForm
+              isEditMode
+              sslForced={sslForced}
+              dbModel={dbModel}
+              db={db as DatabaseObject}
+              onParametersChange={({ target }: { target: HTMLInputElement }) =>
+                onChange(ActionType.parametersChange, {
+                  type: target.type,
+                  name: target.name,
+                  checked: target.checked,
+                  value: target.value,
+                })
+              }
+              onExtraInputChange={({ target }: { target: HTMLInputElement }) =>
+                onChange(ActionType.extraInputChange, {
+                  name: target.name,
+                  value: target.value,
+                })
+              }
+              onChange={({ target }: { target: HTMLInputElement }) =>
+                onChange(ActionType.textChange, {
+                  name: target.name,
+                  value: target.value,
+                })
+              }
+              onQueryChange={({ target }: { target: HTMLInputElement }) =>
+                onChange(ActionType.queryChange, {
+                  name: target.name,
+                  value: target.value,
+                })
+              }
+              onAddTableCatalog={() =>
+                setDB({ type: ActionType.addTableCatalogSheet })
+              }
+              onRemoveTableCatalog={(idx: number) =>
+                setDB({
+                  type: ActionType.removeTableCatalogSheet,
+                  payload: { indexToDelete: idx },
+                })
+              }
+              getValidation={() => getValidation(db)}
+              validationErrors={validationErrors}
+            />
           )}
           {!isEditMode && (
             <StyledAlertMargin>
@@ -1927,7 +1796,73 @@ const DatabaseModal: FunctionComponent<DatabaseModalProps> = ({
                   dbModel={dbModel}
                 />
                 {hasAlert && renderStepTwoAlert()}
-                {renderDatabaseConnectionForm()}
+                <DatabaseConnectionForm
+                  db={db}
+                  sslForced={sslForced}
+                  dbModel={dbModel}
+                  onAddTableCatalog={() => {
+                    setDB({ type: ActionType.addTableCatalogSheet });
+                  }}
+                  onQueryChange={({ target }: { target: HTMLInputElement }) =>
+                    onChange(ActionType.queryChange, {
+                      name: target.name,
+                      value: target.value,
+                    })
+                  }
+                  onExtraInputChange={({
+                    target,
+                  }: {
+                    target: HTMLInputElement;
+                  }) =>
+                    onChange(ActionType.extraInputChange, {
+                      name: target.name,
+                      value: target.value,
+                    })
+                  }
+                  onRemoveTableCatalog={(idx: number) => {
+                    setDB({
+                      type: ActionType.removeTableCatalogSheet,
+                      payload: { indexToDelete: idx },
+                    });
+                  }}
+                  onParametersChange={({
+                    target,
+                  }: {
+                    target: HTMLInputElement;
+                  }) =>
+                    onChange(ActionType.parametersChange, {
+                      type: target.type,
+                      name: target.name,
+                      checked: target.checked,
+                      value: target.value,
+                    })
+                  }
+                  onChange={({ target }: { target: HTMLInputElement }) =>
+                    onChange(ActionType.textChange, {
+                      name: target.name,
+                      value: target.value,
+                    })
+                  }
+                  getValidation={() => getValidation(db)}
+                  validationErrors={validationErrors}
+                  getPlaceholder={getPlaceholder}
+                />
+                <SSHTunnelContainer>
+                  <SSHTunnelSwitchComponent
+                    isEditMode={isEditMode}
+                    dbFetched={dbFetched}
+                    disableSSHTunnelingForEngine={disableSSHTunnelingForEngine}
+                    useSSHTunneling={useSSHTunneling}
+                    setUseSSHTunneling={setUseSSHTunneling}
+                    setDB={setDB}
+                    isSSHTunneling={isSSHTunneling}
+                  />
+                </SSHTunnelContainer>
+                {useSSHTunneling && (
+                  <SSHTunnelContainer>
+                    {renderSSHTunnelForm()}
+                  </SSHTunnelContainer>
+                )}
                 <div css={(theme: SupersetTheme) => infoTooltip(theme)}>
                   {dbModel.engine !== Engines.GSheet && (
                     <>

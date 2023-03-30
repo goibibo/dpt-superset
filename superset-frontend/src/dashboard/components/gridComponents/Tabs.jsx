@@ -23,6 +23,7 @@ import { connect } from 'react-redux';
 import { LineEditableTabs } from 'src/components/Tabs';
 import { LOG_ACTIONS_SELECT_DASHBOARD_TAB } from 'src/logger/LogUtils';
 import { AntdModal } from 'src/components';
+import { FILTER_BOX_MIGRATION_STATES } from 'src/explore/constants';
 import DragDroppable from '../dnd/DragDroppable';
 import DragHandle from '../dnd/DragHandle';
 import DashboardComponent from '../../containers/DashboardComponent';
@@ -48,6 +49,11 @@ const propTypes = {
   renderHoverMenu: PropTypes.bool,
   directPathToChild: PropTypes.arrayOf(PropTypes.string),
   activeTabs: PropTypes.arrayOf(PropTypes.string),
+  filterboxMigrationState: PropTypes.oneOf(
+    Object.keys(FILTER_BOX_MIGRATION_STATES).map(
+      key => FILTER_BOX_MIGRATION_STATES[key],
+    ),
+  ),
 
   // actions (from DashboardComponent.jsx)
   logEvent: PropTypes.func.isRequired,
@@ -75,6 +81,7 @@ const defaultProps = {
   columnWidth: 0,
   activeTabs: [],
   directPathToChild: [],
+  filterboxMigrationState: FILTER_BOX_MIGRATION_STATES.NOOP,
   setActiveTabs() {},
   onResizeStart() {},
   onResize() {},
@@ -129,7 +136,10 @@ export class Tabs extends React.PureComponent {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevState.activeKey !== this.state.activeKey) {
+    if (
+      prevState.activeKey !== this.state.activeKey ||
+      prevProps.filterboxMigrationState !== this.props.filterboxMigrationState
+    ) {
       this.props.setActiveTabs(this.state.activeKey, prevState.activeKey);
     }
   }
@@ -436,6 +446,7 @@ function mapStateToProps(state) {
     nativeFilters: state.nativeFilters,
     activeTabs: state.dashboardState.activeTabs,
     directPathToChild: state.dashboardState.directPathToChild,
+    filterboxMigrationState: state.dashboardState.filterboxMigrationState,
   };
 }
 export default connect(mapStateToProps)(Tabs);

@@ -16,76 +16,78 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import rison from 'rison';
-import fetchMock from 'fetch-mock';
 import { act, renderHook } from '@testing-library/react-hooks';
+import { SupersetClient } from '@superset-ui/core';
 import QueryProvider, { queryClient } from 'src/views/QueryProvider';
 import { useTables } from './tables';
 
 const fakeApiResult = {
-  count: 2,
-  result: [
-    {
-      id: 1,
-      name: 'fake api result1',
-      label: 'fake api label1',
-    },
-    {
-      id: 2,
-      name: 'fake api result2',
-      label: 'fake api label2',
-    },
-  ],
+  json: {
+    count: 2,
+    result: [
+      {
+        id: 1,
+        name: 'fake api result1',
+        label: 'fake api label1',
+      },
+      {
+        id: 2,
+        name: 'fake api result2',
+        label: 'fake api label2',
+      },
+    ],
+  },
 };
 
 const fakeHasMoreApiResult = {
-  count: 4,
-  result: [
-    {
-      id: 1,
-      name: 'fake api result1',
-      label: 'fake api label1',
-    },
-    {
-      id: 2,
-      name: 'fake api result2',
-      label: 'fake api label2',
-    },
-  ],
+  json: {
+    count: 4,
+    result: [
+      {
+        id: 1,
+        name: 'fake api result1',
+        label: 'fake api label1',
+      },
+      {
+        id: 2,
+        name: 'fake api result2',
+        label: 'fake api label2',
+      },
+    ],
+  },
 };
 
-const fakeSchemaApiResult = ['schema1', 'schema2'];
-
 const expectedData = {
-  options: fakeApiResult.result,
+  options: [...fakeApiResult.json.result],
   hasMore: false,
 };
 
 const expectedHasMoreData = {
-  options: fakeHasMoreApiResult.result,
+  options: [...fakeHasMoreApiResult.json.result],
   hasMore: true,
 };
 
+jest.mock('@superset-ui/core', () => ({
+  SupersetClient: {
+    get: jest.fn().mockResolvedValue(fakeApiResult),
+  },
+}));
+
 describe('useTables hook', () => {
   beforeEach(() => {
+    (SupersetClient.get as jest.Mock).mockClear();
     queryClient.clear();
     jest.useFakeTimers();
   });
 
   afterEach(() => {
-    fetchMock.reset();
     jest.useRealTimers();
   });
 
-  test('returns api response mapping json options', async () => {
+  it('returns api response mapping json options', async () => {
     const expectDbId = 'db1';
-    const expectedSchema = 'schema1';
-    const schemaApiRoute = `glob:*/api/v1/database/${expectDbId}/schemas/*`;
-    const tableApiRoute = `glob:*/api/v1/database/${expectDbId}/tables/?q=*`;
-    fetchMock.get(tableApiRoute, fakeApiResult);
-    fetchMock.get(schemaApiRoute, {
-      result: fakeSchemaApiResult,
-    });
+    const expectedSchema = 'schemaA';
+    const forceRefresh = false;
     const { result } = renderHook(
       () =>
         useTables({
@@ -99,73 +101,29 @@ describe('useTables hook', () => {
     await act(async () => {
       jest.runAllTimers();
     });
-    expect(fetchMock.calls(schemaApiRoute).length).toBe(1);
-    expect(
-      fetchMock.calls(
-        `end:api/v1/database/${expectDbId}/tables/?q=${rison.encode({
-          force: false,
-          schema_name: expectedSchema,
-        })}`,
-      ).length,
-    ).toBe(1);
+    expect(SupersetClient.get).toHaveBeenCalledTimes(1);
+    expect(SupersetClient.get).toHaveBeenCalledWith({
+      endpoint: `/api/v1/database/${expectDbId}/tables/?q=(force:!${
+        forceRefresh ? 't' : 'f'
+      },schema_name:${expectedSchema})`,
+    });
     expect(result.current.data).toEqual(expectedData);
     await act(async () => {
       result.current.refetch();
     });
-    expect(fetchMock.calls(schemaApiRoute).length).toBe(1);
-    expect(
-      fetchMock.calls(
-        `end:api/v1/database/${expectDbId}/tables/?q=${rison.encode({
-          force: true,
-          schema_name: expectedSchema,
-        })}`,
-      ).length,
-    ).toBe(1);
+    expect(SupersetClient.get).toHaveBeenCalledTimes(2);
+    expect(SupersetClient.get).toHaveBeenCalledWith({
+      endpoint: `/api/v1/database/${expectDbId}/tables/?q=(force:!t,schema_name:${expectedSchema})`,
+    });
     expect(result.current.data).toEqual(expectedData);
   });
 
-  test('skips the deprecated schema option', async () => {
-    const expectDbId = 'db1';
-    const unexpectedSchema = 'invalid schema';
-    const schemaApiRoute = `glob:*/api/v1/database/${expectDbId}/schemas/*`;
-    const tableApiRoute = `glob:*/api/v1/database/${expectDbId}/tables/?q=*`;
-    fetchMock.get(tableApiRoute, fakeApiResult);
-    fetchMock.get(schemaApiRoute, {
-      result: fakeSchemaApiResult,
-    });
-    const { result } = renderHook(
-      () =>
-        useTables({
-          dbId: expectDbId,
-          schema: unexpectedSchema,
-        }),
-      {
-        wrapper: QueryProvider,
-      },
+  it('returns hasMore when total is larger than result size', async () => {
+    (SupersetClient.get as jest.Mock).mockResolvedValueOnce(
+      fakeHasMoreApiResult,
     );
-    await act(async () => {
-      jest.runAllTimers();
-    });
-    expect(fetchMock.calls(schemaApiRoute).length).toBe(1);
-    expect(result.current.data).toEqual(undefined);
-    expect(
-      fetchMock.calls(
-        `end:api/v1/database/${expectDbId}/tables/?q=${rison.encode({
-          force: false,
-          schema_name: unexpectedSchema,
-        })}`,
-      ).length,
-    ).toBe(0);
-  });
-
-  test('returns hasMore when total is larger than result size', async () => {
     const expectDbId = 'db1';
-    const expectedSchema = 'schema2';
-    const tableApiRoute = `glob:*/api/v1/database/${expectDbId}/tables/?q=*`;
-    fetchMock.get(tableApiRoute, fakeHasMoreApiResult);
-    fetchMock.get(`glob:*/api/v1/database/${expectDbId}/schemas/*`, {
-      result: fakeSchemaApiResult,
-    });
+    const expectedSchema = 'schemaA';
     const { result } = renderHook(
       () =>
         useTables({
@@ -179,18 +137,13 @@ describe('useTables hook', () => {
     await act(async () => {
       jest.runAllTimers();
     });
-    expect(fetchMock.calls(tableApiRoute).length).toBe(1);
+    expect(SupersetClient.get).toHaveBeenCalledTimes(1);
     expect(result.current.data).toEqual(expectedHasMoreData);
   });
 
-  test('returns cached data without api request', async () => {
+  it('returns cached data without api request', async () => {
     const expectDbId = 'db1';
-    const expectedSchema = 'schema1';
-    const tableApiRoute = `glob:*/api/v1/database/${expectDbId}/tables/?q=*`;
-    fetchMock.get(tableApiRoute, fakeApiResult);
-    fetchMock.get(`glob:*/api/v1/database/${expectDbId}/schemas/*`, {
-      result: fakeSchemaApiResult,
-    });
+    const expectedSchema = 'schemaA';
     const { result, rerender } = renderHook(
       () =>
         useTables({
@@ -204,20 +157,15 @@ describe('useTables hook', () => {
     await act(async () => {
       jest.runAllTimers();
     });
-    expect(fetchMock.calls(tableApiRoute).length).toBe(1);
+    expect(SupersetClient.get).toHaveBeenCalledTimes(1);
     rerender();
-    expect(fetchMock.calls(tableApiRoute).length).toBe(1);
+    expect(SupersetClient.get).toHaveBeenCalledTimes(1);
     expect(result.current.data).toEqual(expectedData);
   });
 
-  test('returns refreshed data after expires', async () => {
+  it('returns refreshed data after expires', async () => {
     const expectDbId = 'db1';
-    const expectedSchema = 'schema1';
-    const tableApiRoute = `glob:*/api/v1/database/${expectDbId}/tables/?q=*`;
-    fetchMock.get(tableApiRoute, fakeApiResult);
-    fetchMock.get(`glob:*/api/v1/database/${expectDbId}/schemas/*`, {
-      result: fakeSchemaApiResult,
-    });
+    const expectedSchema = 'schemaA';
     const { result, rerender } = renderHook(
       () =>
         useTables({
@@ -231,18 +179,18 @@ describe('useTables hook', () => {
     await act(async () => {
       jest.runAllTimers();
     });
-    expect(fetchMock.calls(tableApiRoute).length).toBe(1);
+    expect(SupersetClient.get).toHaveBeenCalledTimes(1);
     rerender();
     await act(async () => {
       jest.runAllTimers();
     });
-    expect(fetchMock.calls(tableApiRoute).length).toBe(1);
+    expect(SupersetClient.get).toHaveBeenCalledTimes(1);
     queryClient.clear();
     rerender();
     await act(async () => {
       jest.runAllTimers();
     });
-    expect(fetchMock.calls(tableApiRoute).length).toBe(2);
+    expect(SupersetClient.get).toHaveBeenCalledTimes(2);
     expect(result.current.data).toEqual(expectedData);
   });
 });

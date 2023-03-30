@@ -21,11 +21,12 @@ import PropTypes from 'prop-types';
 import Mustache from 'mustache';
 import { scaleLinear } from 'd3-scale';
 import TableView from 'src/components/TableView';
-import { styled, t } from '@superset-ui/core';
+import { formatNumber, formatTime, styled, t } from '@superset-ui/core';
 import {
   InfoTooltipWithTrigger,
   MetricOption,
 } from '@superset-ui/chart-controls';
+import moment from 'moment';
 import sortNumericValues from 'src/utils/sortNumericValues';
 
 import FormattedNumber from './FormattedNumber';
@@ -162,16 +163,25 @@ const TimeTable = ({
 
       return (
         <SparklineCell
-          ariaLabel={`spark-${valueField}`}
           width={parseInt(column.width, 10) || 300}
           height={parseInt(column.height, 10) || 50}
           data={sparkData}
-          dataKey={`spark-${valueField}`}
-          dateFormat={column.dateFormat}
+          data-value={sparkData[sparkData.length - 1]}
+          ariaLabel={`spark-${valueField}`}
           numberFormat={column.d3format}
           yAxisBounds={column.yAxisBounds}
           showYAxis={column.showYAxis}
-          entries={entries}
+          renderTooltip={({ index }) => (
+            <div>
+              <strong>{formatNumber(column.d3format, sparkData[index])}</strong>
+              <div>
+                {formatTime(
+                  column.dateFormat,
+                  moment.utc(entries[index].time).toDate(),
+                )}
+              </div>
+            </div>
+          )}
         />
       );
     };

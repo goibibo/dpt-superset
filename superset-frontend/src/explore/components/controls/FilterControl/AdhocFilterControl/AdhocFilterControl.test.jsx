@@ -22,7 +22,10 @@ import sinon from 'sinon';
 import { shallow } from 'enzyme';
 import { supersetTheme } from '@superset-ui/core';
 
-import AdhocFilter from 'src/explore/components/controls/FilterControl/AdhocFilter';
+import AdhocFilter, {
+  EXPRESSION_TYPES,
+  CLAUSES,
+} from 'src/explore/components/controls/FilterControl/AdhocFilter';
 import { LabelsContainer } from 'src/explore/components/controls/OptionControls';
 import {
   AGGREGATES,
@@ -31,7 +34,6 @@ import {
 } from 'src/explore/constants';
 import AdhocMetric from 'src/explore/components/controls/MetricControl/AdhocMetric';
 import AdhocFilterControl from '.';
-import { CLAUSES, EXPRESSION_TYPES } from '../types';
 
 const simpleAdhocFilter = new AdhocFilter({
   expressionType: EXPRESSION_TYPES.SIMPLE,

@@ -210,50 +210,35 @@ const SqlEditorLeftBar = ({
   const shouldShowReset = window.location.search === '?reset=1';
   const tableMetaDataHeight = height - 130; // 130 is the height of the selects above
 
-  const handleSchemaChange = useCallback(
-    (schema: string) => {
-      if (queryEditor) {
-        dispatch(queryEditorSetSchema(queryEditor, schema));
-      }
-    },
-    [dispatch, queryEditor],
-  );
+  const handleSchemaChange = useCallback((schema: string) => {
+    if (queryEditor) {
+      dispatch(queryEditorSetSchema(queryEditor, schema));
+    }
+  }, []);
 
-  const handleTablesLoad = useCallback(
-    (options: Array<any>) => {
-      if (queryEditor) {
-        dispatch(queryEditorSetTableOptions(queryEditor, options));
-      }
-    },
-    [dispatch, queryEditor],
-  );
+  const handleTablesLoad = useCallback((options: Array<any>) => {
+    if (queryEditor) {
+      dispatch(queryEditorSetTableOptions(queryEditor, options));
+    }
+  }, []);
 
-  const handleSchemasLoad = useCallback(
-    (options: Array<any>) => {
-      if (queryEditor) {
-        dispatch(queryEditorSetSchemaOptions(queryEditor, options));
-      }
-    },
-    [dispatch, queryEditor],
-  );
+  const handleSchemasLoad = useCallback((options: Array<any>) => {
+    if (queryEditor) {
+      dispatch(queryEditorSetSchemaOptions(queryEditor, options));
+    }
+  }, []);
 
-  const handleDbList = useCallback(
-    (result: DatabaseObject) => {
-      dispatch(setDatabases(result));
-    },
-    [dispatch],
-  );
+  const handleDbList = useCallback((result: DatabaseObject) => {
+    dispatch(setDatabases(result));
+  }, []);
 
-  const handleError = useCallback(
-    (message: string) => {
-      dispatch(addDangerToast(message));
-    },
-    [dispatch],
-  );
+  const handleError = useCallback((message: string) => {
+    dispatch(addDangerToast(message));
+  }, []);
 
   const handleResetState = useCallback(() => {
     dispatch(resetState());
-  }, [dispatch]);
+  }, []);
 
   return (
     <LeftBarStyles data-test="sql-editor-left-bar">

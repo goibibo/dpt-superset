@@ -19,9 +19,19 @@
 import React from 'react';
 import { render, screen, waitFor } from 'spec/helpers/testing-library';
 import userEvent from '@testing-library/user-event';
-import AdhocFilter from 'src/explore/components/controls/FilterControl/AdhocFilter';
+import AdhocFilter, {
+  EXPRESSION_TYPES,
+  CLAUSES,
+} from 'src/explore/components/controls/FilterControl/AdhocFilter';
 import AdhocFilterOption, { AdhocFilterOptionProps } from '.';
-import { CLAUSES, EXPRESSION_TYPES } from '../types';
+
+jest.mock('src/components/Icons/Icon', () => ({
+  __esModule: true,
+  default: ({ fileName, role }: { fileName: string; role: string }) => (
+    <span role={role ?? 'img'} aria-label={fileName.replace('_', '-')} />
+  ),
+  StyledIcon: () => <span />,
+}));
 
 const simpleAdhocFilter = new AdhocFilter({
   expressionType: EXPRESSION_TYPES.SIMPLE,

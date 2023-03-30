@@ -213,9 +213,7 @@ export const FastVizSwitcher = React.memo(
       ) {
         vizTiles.unshift({
           name: currentSelection,
-          icon: (
-            <Icons.MonitorOutlined {...antdIconProps} aria-label="monitor" />
-          ),
+          icon: <Icons.MonitorOutlined {...antdIconProps} />,
         });
       }
       if (
@@ -226,12 +224,7 @@ export const FastVizSwitcher = React.memo(
       ) {
         vizTiles.unshift({
           name: currentViz,
-          icon: (
-            <Icons.CheckSquareOutlined
-              {...antdIconProps}
-              aria-label="check-square"
-            />
-          ),
+          icon: <Icons.CheckSquareOutlined {...antdIconProps} />,
         });
       }
       return vizTiles;

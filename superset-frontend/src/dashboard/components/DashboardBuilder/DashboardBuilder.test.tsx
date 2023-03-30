@@ -49,6 +49,9 @@ jest.mock('src/featureFlags');
 jest.mock('src/components/ResizableSidebar/useStoredSidebarWidth');
 
 // mock following dependant components to fix the prop warnings
+jest.mock('src/components/Icons/Icon', () => () => (
+  <div data-test="mock-icon" />
+));
 jest.mock('src/components/DeprecatedSelect/WindowedSelect', () => () => (
   <div data-test="mock-windowed-select" />
 ));
@@ -281,6 +284,7 @@ describe('DashboardBuilder', () => {
         dashboardInfo: {
           ...mockState.dashboardInfo,
           dash_edit_perm: true,
+          metadata: { show_native_filters: true },
         },
       });
       const filterbar = getByTestId('dashboard-filters-panel');

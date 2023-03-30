@@ -25,10 +25,6 @@ import {
   ExtraFormData,
 } from '@superset-ui/core';
 import { FALSE_STRING, NULL_STRING, TRUE_STRING } from 'src/utils/common';
-import {
-  CLAUSES,
-  EXPRESSION_TYPES,
-} from '../explore/components/controls/FilterControl/types';
 
 export const getSelectExtraFormData = (
   col: string,
@@ -40,8 +36,8 @@ export const getSelectExtraFormData = (
   if (emptyFilter) {
     extra.adhoc_filters = [
       {
-        expressionType: EXPRESSION_TYPES.SQL,
-        clause: CLAUSES.WHERE,
+        expressionType: 'SQL',
+        clause: 'WHERE',
         sqlExpression: '1 = 0',
       },
     ];

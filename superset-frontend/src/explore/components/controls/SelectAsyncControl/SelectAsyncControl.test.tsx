@@ -65,17 +65,17 @@ beforeEach(() => {
   jest.resetAllMocks();
 });
 
-test('Should render', async () => {
+test('Should render', () => {
   const props = createProps();
   render(<SelectAsyncControl {...props} />, { useRedux: true });
-  expect(await screen.findByTestId('select-test')).toBeInTheDocument();
+  expect(screen.getByTestId('select-test')).toBeInTheDocument();
 });
 
-test('Should send correct props to Select component - value props', async () => {
+test('Should send correct props to Select component - value props', () => {
   const props = createProps();
   render(<SelectAsyncControl {...props} />, { useRedux: true });
 
-  expect(await screen.findByTestId('select-test')).toHaveAttribute(
+  expect(screen.getByTestId('select-test')).toHaveAttribute(
     'data-value',
     JSON.stringify(props.value),
   );
@@ -89,20 +89,20 @@ test('Should send correct props to Select component - value props', async () => 
   );
 });
 
-test('Should send correct props to Select component - function onChange multi:true', async () => {
+test('Should send correct props to Select component - function onChange multi:true', () => {
   const props = createProps();
   render(<SelectAsyncControl {...props} />, { useRedux: true });
   expect(props.onChange).toBeCalledTimes(0);
-  userEvent.click(await screen.findByText('onChange'));
+  userEvent.click(screen.getByText('onChange'));
   expect(props.onChange).toBeCalledTimes(1);
 });
 
-test('Should send correct props to Select component - function onChange multi:false', async () => {
+test('Should send correct props to Select component - function onChange multi:false', () => {
   const props = createProps();
   render(<SelectAsyncControl {...{ ...props, multi: false }} />, {
     useRedux: true,
   });
   expect(props.onChange).toBeCalledTimes(0);
-  userEvent.click(await screen.findByText('onChange'));
+  userEvent.click(screen.getByText('onChange'));
   expect(props.onChange).toBeCalledTimes(1);
 });

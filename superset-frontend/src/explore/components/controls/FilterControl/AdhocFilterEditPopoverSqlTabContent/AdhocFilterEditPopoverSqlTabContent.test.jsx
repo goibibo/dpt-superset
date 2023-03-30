@@ -21,9 +21,11 @@ import React from 'react';
 import sinon from 'sinon';
 import { shallow } from 'enzyme';
 
-import AdhocFilter from 'src/explore/components/controls/FilterControl/AdhocFilter';
+import AdhocFilter, {
+  EXPRESSION_TYPES,
+  CLAUSES,
+} from 'src/explore/components/controls/FilterControl/AdhocFilter';
 import AdhocFilterEditPopoverSqlTabContent from '.';
-import { CLAUSES, EXPRESSION_TYPES } from '../types';
 
 const sqlAdhocFilter = new AdhocFilter({
   expressionType: EXPRESSION_TYPES.SQL,

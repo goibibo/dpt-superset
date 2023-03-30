@@ -16,100 +16,94 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { FeatureFlag, isFeatureEnabled } from '@superset-ui/core';
 import React, { lazy } from 'react';
 
 // not lazy loaded since this is the home page.
-import Home from 'src/pages/Home';
+import Welcome from 'src/views/CRUD/welcome/Welcome';
 
 const ChartCreation = lazy(
   () =>
     import(/* webpackChunkName: "ChartCreation" */ 'src/pages/ChartCreation'),
 );
-
-const AnnotationLayerList = lazy(
+const AnnotationLayersList = lazy(
   () =>
     import(
-      /* webpackChunkName: "AnnotationLayerList" */ 'src/pages/AnnotationLayerList'
+      /* webpackChunkName: "AnnotationLayersList" */ 'src/views/CRUD/annotationlayers/AnnotationLayersList'
     ),
 );
-
-const AlertReportList = lazy(
+const AlertList = lazy(
   () =>
     import(
-      /* webpackChunkName: "AlertReportList" */ 'src/pages/AlertReportList'
+      /* webpackChunkName: "AlertList" */ 'src/views/CRUD/alert/AlertList'
     ),
 );
-
 const AnnotationList = lazy(
   () =>
-    import(/* webpackChunkName: "AnnotationList" */ 'src/pages/AnnotationList'),
+    import(
+      /* webpackChunkName: "AnnotationList" */ 'src/views/CRUD/annotation/AnnotationList'
+    ),
 );
-
 const ChartList = lazy(
   () => import(/* webpackChunkName: "ChartList" */ 'src/pages/ChartList'),
 );
-
-const CssTemplateList = lazy(
+const CssTemplatesList = lazy(
   () =>
     import(
-      /* webpackChunkName: "CssTemplateList" */ 'src/pages/CssTemplateList'
+      /* webpackChunkName: "CssTemplatesList" */ 'src/views/CRUD/csstemplates/CssTemplatesList'
     ),
 );
-
 const DashboardList = lazy(
   () =>
-    import(/* webpackChunkName: "DashboardList" */ 'src/pages/DashboardList'),
+    import(
+      /* webpackChunkName: "DashboardList" */ 'src/views/CRUD/dashboard/DashboardList'
+    ),
 );
-
-const Dashboard = lazy(
-  () => import(/* webpackChunkName: "Dashboard" */ 'src/pages/Dashboard'),
+const DashboardRoute = lazy(
+  () =>
+    import(
+      /* webpackChunkName: "DashboardRoute" */ 'src/dashboard/containers/DashboardRoute'
+    ),
 );
-
 const DatabaseList = lazy(
-  () => import(/* webpackChunkName: "DatabaseList" */ 'src/pages/DatabaseList'),
+  () =>
+    import(
+      /* webpackChunkName: "DatabaseList" */ 'src/views/CRUD/data/database/DatabaseList'
+    ),
 );
-
 const DatasetList = lazy(
-  () => import(/* webpackChunkName: "DatasetList" */ 'src/pages/DatasetList'),
-);
-
-const DatasetCreation = lazy(
   () =>
     import(
-      /* webpackChunkName: "DatasetCreation" */ 'src/pages/DatasetCreation'
+      /* webpackChunkName: "DatasetList" */ 'src/views/CRUD/data/dataset/DatasetList'
     ),
 );
 
-const ExecutionLogList = lazy(
+const AddDataset = lazy(
   () =>
     import(
-      /* webpackChunkName: "ExecutionLogList" */ 'src/pages/ExecutionLogList'
+      /* webpackChunkName: "DatasetEditor" */ 'src/views/CRUD/data/dataset/AddDataset/index'
     ),
 );
 
-const Chart = lazy(
-  () => import(/* webpackChunkName: "Chart" */ 'src/pages/Chart'),
-);
-
-const QueryHistoryList = lazy(
+const ExecutionLog = lazy(
   () =>
     import(
-      /* webpackChunkName: "QueryHistoryList" */ 'src/pages/QueryHistoryList'
+      /* webpackChunkName: "ExecutionLog" */ 'src/views/CRUD/alert/ExecutionLog'
     ),
 );
-
+const ExplorePage = lazy(
+  () => import(/* webpackChunkName: "ExplorePage" */ 'src/explore/ExplorePage'),
+);
+const QueryList = lazy(
+  () =>
+    import(
+      /* webpackChunkName: "QueryList" */ 'src/views/CRUD/data/query/QueryList'
+    ),
+);
 const SavedQueryList = lazy(
   () =>
-    import(/* webpackChunkName: "SavedQueryList" */ 'src/pages/SavedQueryList'),
-);
-
-const AllEntities = lazy(
-  () => import(/* webpackChunkName: "AllEntities" */ 'src/pages/AllEntities'),
-);
-
-const Tags = lazy(
-  () => import(/* webpackChunkName: "Tags" */ 'src/pages/Tags'),
+    import(
+      /* webpackChunkName: "SavedQueryList" */ 'src/views/CRUD/data/savedquery/SavedQueryList'
+    ),
 );
 
 type Routes = {
@@ -122,7 +116,7 @@ type Routes = {
 export const routes: Routes = [
   {
     path: '/superset/welcome/',
-    Component: Home,
+    Component: Welcome,
   },
   {
     path: '/dashboard/list/',
@@ -130,7 +124,7 @@ export const routes: Routes = [
   },
   {
     path: '/superset/dashboard/:idOrSlug/',
-    Component: Dashboard,
+    Component: DashboardRoute,
   },
   {
     path: '/chart/add',
@@ -154,11 +148,11 @@ export const routes: Routes = [
   },
   {
     path: '/csstemplatemodelview/list/',
-    Component: CssTemplateList,
+    Component: CssTemplatesList,
   },
   {
     path: '/annotationlayer/list/',
-    Component: AnnotationLayerList,
+    Component: AnnotationLayersList,
   },
   {
     path: '/annotationlayer/:annotationLayerId/annotation/',
@@ -166,58 +160,47 @@ export const routes: Routes = [
   },
   {
     path: '/superset/sqllab/history/',
-    Component: QueryHistoryList,
+    Component: QueryList,
   },
   {
     path: '/alert/list/',
-    Component: AlertReportList,
+    Component: AlertList,
   },
   {
     path: '/report/list/',
-    Component: AlertReportList,
+    Component: AlertList,
     props: {
       isReportEnabled: true,
     },
   },
   {
     path: '/alert/:alertId/log/',
-    Component: ExecutionLogList,
+    Component: ExecutionLog,
   },
   {
     path: '/report/:alertId/log/',
-    Component: ExecutionLogList,
+    Component: ExecutionLog,
     props: {
       isReportEnabled: true,
     },
   },
   {
     path: '/explore/',
-    Component: Chart,
+    Component: ExplorePage,
   },
   {
     path: '/superset/explore/p',
-    Component: Chart,
+    Component: ExplorePage,
   },
   {
     path: '/dataset/add/',
-    Component: DatasetCreation,
+    Component: AddDataset,
   },
   {
     path: '/dataset/:datasetId',
-    Component: DatasetCreation,
+    Component: AddDataset,
   },
 ];
-
-if (isFeatureEnabled(FeatureFlag.TAGGING_SYSTEM)) {
-  routes.push({
-    path: '/superset/all_entities/',
-    Component: AllEntities,
-  });
-  routes.push({
-    path: '/superset/tags/',
-    Component: Tags,
-  });
-}
 
 const frontEndRoutes = routes
   .map(r => r.path)

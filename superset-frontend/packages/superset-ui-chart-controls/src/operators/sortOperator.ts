@@ -26,7 +26,6 @@ import {
   PostProcessingSort,
 } from '@superset-ui/core';
 import { PostProcessingFactory } from './types';
-import { extractExtraMetrics } from './utils';
 
 export const sortOperator: PostProcessingFactory<PostProcessingSort> = (
   formData,
@@ -35,8 +34,7 @@ export const sortOperator: PostProcessingFactory<PostProcessingSort> = (
   // the sortOperator only used in the barchart v2
   const sortableLabels = [
     getXAxisLabel(formData),
-    ...ensureIsArray(formData.metrics).map(getMetricLabel),
-    ...extractExtraMetrics(formData).map(getMetricLabel),
+    ...ensureIsArray(formData.metrics).map(metric => getMetricLabel(metric)),
   ].filter(Boolean);
 
   if (

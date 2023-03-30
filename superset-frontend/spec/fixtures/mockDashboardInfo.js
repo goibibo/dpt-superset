@@ -36,7 +36,7 @@ export default {
   dash_save_perm: true,
   common: {
     flash_messages: [],
-    conf: { SUPERSET_WEBSERVER_TIMEOUT: 60 },
+    conf: { SUPERSET_WEBSERVER_TIMEOUT: 300 },
   },
   filterBarOrientation: FilterBarOrientation.VERTICAL,
 };

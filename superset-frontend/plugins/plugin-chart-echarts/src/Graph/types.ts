@@ -55,7 +55,6 @@ export type EchartsGraphFormData = QueryFormData &
 
 export type EChartGraphNode = Omit<GraphNodeItemOption, 'value'> & {
   value: number;
-  col: string;
   tooltip?: Pick<SeriesTooltipOption, 'formatter'>;
 };
 

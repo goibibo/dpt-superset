@@ -19,7 +19,7 @@
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { render, screen } from 'spec/helpers/testing-library';
-import { Indicator } from 'src/dashboard/components/nativeFilters/selectors';
+import { Indicator } from 'src/dashboard/components/FiltersBadge/selectors';
 import DetailsPanel from '.';
 
 const createProps = () => ({

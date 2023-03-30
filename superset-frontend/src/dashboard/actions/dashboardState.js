@@ -36,10 +36,7 @@ import {
   SAVE_TYPE_OVERWRITE,
   SAVE_TYPE_OVERWRITE_CONFIRMED,
 } from 'src/dashboard/util/constants';
-import {
-  getCrossFiltersConfiguration,
-  isCrossFiltersEnabled,
-} from 'src/dashboard/util/crossFilters';
+import { isCrossFiltersEnabled } from 'src/dashboard/util/crossFilters';
 import {
   addSuccessToast,
   addWarningToast,
@@ -285,17 +282,25 @@ export function saveDashboardRequest(data, id, saveType) {
 
     const handleChartConfiguration = () => {
       const {
-        dashboardLayout,
-        charts,
         dashboardInfo: {
           metadata: { chart_configuration = {} },
         },
       } = getState();
-      return getCrossFiltersConfiguration(
-        dashboardLayout.present,
-        chart_configuration,
-        charts,
+      const chartConfiguration = Object.values(chart_configuration).reduce(
+        (prev, next) => {
+          // If chart removed from dashboard - remove it from metadata
+          if (
+            Object.values(layout).find(
+              layoutItem => layoutItem?.meta?.chartId === next.id,
+            )
+          ) {
+            return { ...prev, [next.id]: next };
+          }
+          return prev;
+        },
+        {},
       );
+      return chartConfiguration;
     };
 
     const onCopySuccess = response => {

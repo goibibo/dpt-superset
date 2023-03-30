@@ -45,10 +45,12 @@ import Icons from 'src/components/Icons';
 import Modal from 'src/components/Modal';
 import AdhocFilterPopoverTrigger from 'src/explore/components/controls/FilterControl/AdhocFilterPopoverTrigger';
 import AdhocFilterOption from 'src/explore/components/controls/FilterControl/AdhocFilterOption';
-import AdhocFilter from 'src/explore/components/controls/FilterControl/AdhocFilter';
+import AdhocFilter, {
+  CLAUSES,
+  EXPRESSION_TYPES,
+} from 'src/explore/components/controls/FilterControl/AdhocFilter';
 import adhocFilterType from 'src/explore/components/controls/FilterControl/adhocFilterType';
 import columnType from 'src/explore/components/controls/FilterControl/columnType';
-import { CLAUSES, EXPRESSION_TYPES } from '../types';
 
 const { warning } = Modal;
 

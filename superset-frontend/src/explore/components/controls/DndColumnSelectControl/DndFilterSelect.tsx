@@ -43,7 +43,10 @@ import { Datasource, OptionSortType } from 'src/explore/types';
 import { OptionValueType } from 'src/explore/components/controls/DndColumnSelectControl/types';
 import AdhocFilterPopoverTrigger from 'src/explore/components/controls/FilterControl/AdhocFilterPopoverTrigger';
 import DndSelectLabel from 'src/explore/components/controls/DndColumnSelectControl/DndSelectLabel';
-import AdhocFilter from 'src/explore/components/controls/FilterControl/AdhocFilter';
+import AdhocFilter, {
+  CLAUSES,
+  EXPRESSION_TYPES,
+} from 'src/explore/components/controls/FilterControl/AdhocFilter';
 import AdhocMetric from 'src/explore/components/controls/MetricControl/AdhocMetric';
 import {
   DatasourcePanelDndItem,
@@ -55,7 +58,6 @@ import { ControlComponentProps } from 'src/explore/components/Control';
 import AdhocFilterControl from '../FilterControl/AdhocFilterControl';
 import DndAdhocFilterOption from './DndAdhocFilterOption';
 import { useDefaultTimeFilter } from '../DateFilterControl/utils';
-import { CLAUSES, EXPRESSION_TYPES } from '../FilterControl/types';
 
 const { warning } = Modal;
 

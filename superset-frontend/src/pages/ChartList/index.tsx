@@ -41,7 +41,6 @@ import {
 } from 'src/views/CRUD/hooks';
 import handleResourceExport from 'src/utils/export';
 import ConfirmStatusChange from 'src/components/ConfirmStatusChange';
-import { TagsList } from 'src/components/Tags';
 import SubMenu, { SubMenuProps } from 'src/views/components/SubMenu';
 import FaveStar from 'src/components/FaveStar';
 import { Link, useHistory } from 'react-router-dom';
@@ -59,7 +58,6 @@ import withToasts from 'src/components/MessageToasts/withToasts';
 import PropertiesModal from 'src/explore/components/PropertiesModal';
 import ImportModelsModal from 'src/components/ImportModal/index';
 import Chart, { ChartLinkedDashboard } from 'src/types/Chart';
-import Tag from 'src/types/TagType';
 import { Tooltip } from 'src/components/Tooltip';
 import Icons from 'src/components/Icons';
 import { nativeFilterGate } from 'src/dashboard/components/nativeFilters/utils';
@@ -69,8 +67,7 @@ import CertifiedBadge from 'src/components/CertifiedBadge';
 import { GenericLink } from 'src/components/GenericLink/GenericLink';
 import getBootstrapData from 'src/utils/getBootstrapData';
 import Owner from 'src/types/Owner';
-import { loadTags } from 'src/components/Tags/utils';
-import ChartCard from 'src/views/CRUD/chart/ChartCard';
+import ChartCard from './ChartCard';
 
 const FlexRowContainer = styled.div`
   align-items: center;
@@ -151,7 +148,7 @@ interface ChartListProps {
   };
 }
 
-const StyledActions = styled.div`
+const Actions = styled.div`
   color: ${({ theme }) => theme.colors.grayscale.base};
 `;
 
@@ -197,16 +194,6 @@ function ChartList(props: ChartListProps) {
   const [importingChart, showImportModal] = useState<boolean>(false);
   const [passwordFields, setPasswordFields] = useState<string[]>([]);
   const [preparingExport, setPreparingExport] = useState<boolean>(false);
-  const [sshTunnelPasswordFields, setSSHTunnelPasswordFields] = useState<
-    string[]
-  >([]);
-  const [sshTunnelPrivateKeyFields, setSSHTunnelPrivateKeyFields] = useState<
-    string[]
-  >([]);
-  const [
-    sshTunnelPrivateKeyPasswordFields,
-    setSSHTunnelPrivateKeyPasswordFields,
-  ] = useState<string[]>([]);
 
   // TODO: Fix usage of localStorage keying on the user id
   const userSettings = dangerouslyGetItemDoNotUse(userId?.toString(), null) as {
@@ -463,27 +450,6 @@ function ChartList(props: ChartListProps) {
         size: 'xl',
       },
       {
-        Cell: ({
-          row: {
-            original: { tags = [] },
-          },
-        }: any) => (
-          // Only show custom type tags
-          <TagsList
-            tags={tags.filter((tag: Tag) =>
-              tag.type
-                ? tag.type === 1 || tag.type === 'TagTypes.custom'
-                : true,
-            )}
-            maxTags={3}
-          />
-        ),
-        Header: t('Tags'),
-        accessor: 'tags',
-        disableSortBy: true,
-        hidden: !isFeatureEnabled(FeatureFlag.TAGGING_SYSTEM),
-      },
-      {
         Cell: ({ row: { original } }: any) => {
           const handleDelete = () =>
             handleChartDelete(
@@ -499,7 +465,7 @@ function ChartList(props: ChartListProps) {
           }
 
           return (
-            <StyledActions className="actions">
+            <Actions className="actions">
               {canDelete && (
                 <ConfirmStatusChange
                   title={t('Please confirm')}
@@ -562,7 +528,7 @@ function ChartList(props: ChartListProps) {
                   </span>
                 </Tooltip>
               )}
-            </StyledActions>
+            </Actions>
           );
         },
         Header: t('Actions'),
@@ -601,8 +567,8 @@ function ChartList(props: ChartListProps) {
     [],
   );
 
-  const filters: Filters = useMemo(() => {
-    const filters_list = [
+  const filters: Filters = useMemo(
+    () => [
       {
         Header: t('Owner'),
         key: 'owner',
@@ -707,27 +673,16 @@ function ChartList(props: ChartListProps) {
           { label: t('No'), value: false },
         ],
       },
-    ] as Filters;
-    if (isFeatureEnabled(FeatureFlag.TAGGING_SYSTEM)) {
-      filters_list.push({
-        Header: t('Tags'),
-        key: 'tags',
-        id: 'tags',
-        input: 'select',
-        operator: FilterOperator.chartTags,
-        unfilteredLabel: t('All'),
-        fetchSelects: loadTags,
-      });
-    }
-    filters_list.push({
-      Header: t('Search'),
-      key: 'search',
-      id: 'slice_name',
-      input: 'search',
-      operator: FilterOperator.chartAllText,
-    });
-    return filters_list;
-  }, [addDangerToast, favoritesFilter, props.user]);
+      {
+        Header: t('Search'),
+        key: 'search',
+        id: 'slice_name',
+        input: 'search',
+        operator: FilterOperator.chartAllText,
+      },
+    ],
+    [addDangerToast, favoritesFilter, props.user],
+  );
 
   const sortTypes = [
     {
@@ -898,14 +853,6 @@ function ChartList(props: ChartListProps) {
         onHide={closeChartImportModal}
         passwordFields={passwordFields}
         setPasswordFields={setPasswordFields}
-        sshTunnelPasswordFields={sshTunnelPasswordFields}
-        setSSHTunnelPasswordFields={setSSHTunnelPasswordFields}
-        sshTunnelPrivateKeyFields={sshTunnelPrivateKeyFields}
-        setSSHTunnelPrivateKeyFields={setSSHTunnelPrivateKeyFields}
-        sshTunnelPrivateKeyPasswordFields={sshTunnelPrivateKeyPasswordFields}
-        setSSHTunnelPrivateKeyPasswordFields={
-          setSSHTunnelPrivateKeyPasswordFields
-        }
       />
       {preparingExport && <Loading />}
     </>

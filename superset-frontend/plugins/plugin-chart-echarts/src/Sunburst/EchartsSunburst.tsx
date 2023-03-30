@@ -43,77 +43,65 @@ export default function EchartsSunburst(props: SunburstTransformedProps) {
 
   const { columns } = formData;
 
-  const getCrossFilterDataMask = useCallback(
-    (treePathInfo: TreePathInfo[]) => {
-      const treePath = extractTreePathInfo(treePathInfo);
-      const name = treePath.join(',');
-      const selected = Object.values(selectedValues);
-      let values: string[];
-      if (selected.includes(name)) {
-        values = selected.filter(v => v !== name);
-      } else {
-        values = [name];
-      }
-      const labels = values.map(value => labelMap[value]);
-
-      return {
-        dataMask: {
-          extraFormData: {
-            filters:
-              values.length === 0 || !columns
-                ? []
-                : columns.map((col, idx) => {
-                    const val = labels.map(v => v[idx]);
-                    if (val === null || val === undefined)
-                      return {
-                        col,
-                        op: 'IS NULL' as const,
-                      };
-                    return {
-                      col,
-                      op: 'IN' as const,
-                      val: val as (string | number | boolean)[],
-                    };
-                  }),
-          },
-          filterState: {
-            value: labels.length ? labels : null,
-            selectedValues: values.length ? values : null,
-          },
-        },
-        isCurrentValueSelected: selected.includes(name),
-      };
-    },
-    [columns, labelMap, selectedValues],
-  );
-
   const handleChange = useCallback(
-    (treePathInfo: TreePathInfo[]) => {
+    (values: string[]) => {
       if (!emitCrossFilters) {
         return;
       }
 
-      setDataMask(getCrossFilterDataMask(treePathInfo).dataMask);
+      const labels = values.map(value => labelMap[value]);
+
+      setDataMask({
+        extraFormData: {
+          filters:
+            values.length === 0 || !columns
+              ? []
+              : columns.map((col, idx) => {
+                  const val = labels.map(v => v[idx]);
+                  if (val === null || val === undefined)
+                    return {
+                      col,
+                      op: 'IS NULL',
+                    };
+                  return {
+                    col,
+                    op: 'IN',
+                    val: val as (string | number | boolean)[],
+                  };
+                }),
+        },
+        filterState: {
+          value: labels.length ? labels : null,
+          selectedValues: values.length ? values : null,
+        },
+      });
     },
-    [emitCrossFilters, setDataMask, getCrossFilterDataMask],
+    [emitCrossFilters, setDataMask, columns, labelMap],
   );
 
   const eventHandlers: EventHandlers = {
     click: props => {
       const { treePathInfo } = props;
-      handleChange(treePathInfo);
+      const treePath = extractTreePathInfo(treePathInfo);
+      const name = treePath.join(',');
+      const values = Object.values(selectedValues);
+      if (values.includes(name)) {
+        handleChange(values.filter(v => v !== name));
+      } else {
+        handleChange([name]);
+      }
     },
     contextmenu: eventParams => {
       if (onContextMenu) {
         eventParams.event.stop();
-        const { data, treePathInfo } = eventParams;
+        const { data } = eventParams;
         const { records } = data;
         const treePath = extractTreePathInfo(eventParams.treePathInfo);
         const pointerEvent = eventParams.event.event;
-        const drillToDetailFilters: BinaryQueryObjectFilterClause[] = [];
+        const filters: BinaryQueryObjectFilterClause[] = [];
         if (columns?.length) {
           treePath.forEach((path, i) =>
-            drillToDetailFilters.push({
+            filters.push({
               col: columns[i],
               op: '==',
               val: records[i],
@@ -121,10 +109,7 @@ export default function EchartsSunburst(props: SunburstTransformedProps) {
             }),
           );
         }
-        onContextMenu(pointerEvent.clientX, pointerEvent.clientY, {
-          drillToDetail: drillToDetailFilters,
-          crossFilter: getCrossFilterDataMask(treePathInfo),
-        });
+        onContextMenu(pointerEvent.clientX, pointerEvent.clientY, filters);
       }
     },
   };

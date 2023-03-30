@@ -442,11 +442,10 @@ const DashboardBuilder: FC<DashboardBuilderProps> = () => {
   const dashboardIsSaving = useSelector<RootState, boolean>(
     ({ dashboardState }) => dashboardState.dashboardIsSaving,
   );
+  const nativeFilters = useSelector((state: RootState) => state.nativeFilters);
+  const focusedFilterId = nativeFilters?.focusedFilterId;
   const fullSizeChartId = useSelector<RootState, number | null>(
     state => state.dashboardState.fullSizeChartId,
-  );
-  const crossFiltersEnabled = isFeatureEnabled(
-    FeatureFlag.DASHBOARD_CROSS_FILTERS,
   );
   const filterBarOrientation = useSelector<RootState, FilterBarOrientation>(
     ({ dashboardInfo }) =>
@@ -526,8 +525,7 @@ const DashboardBuilder: FC<DashboardBuilderProps> = () => {
   const filterSetEnabled = isFeatureEnabled(
     FeatureFlag.DASHBOARD_NATIVE_FILTERS_SET,
   );
-  const showFilterBar =
-    (crossFiltersEnabled || nativeFiltersEnabled) && !editMode;
+  const showFilterBar = nativeFiltersEnabled && !editMode;
 
   const offset =
     FILTER_BAR_HEADER_HEIGHT +
@@ -582,7 +580,10 @@ const DashboardBuilder: FC<DashboardBuilderProps> = () => {
         {!hideDashboardHeader && <DashboardHeader />}
         {showFilterBar &&
           filterBarOrientation === FilterBarOrientation.HORIZONTAL && (
-            <FilterBar orientation={FilterBarOrientation.HORIZONTAL} />
+            <FilterBar
+              focusedFilterId={focusedFilterId}
+              orientation={FilterBarOrientation.HORIZONTAL}
+            />
           )}
         {dropIndicatorProps && <div {...dropIndicatorProps} />}
         {!isReport && topLevelTabs && !uiConfig.hideNav && (
@@ -612,6 +613,7 @@ const DashboardBuilder: FC<DashboardBuilderProps> = () => {
       </div>
     ),
     [
+      focusedFilterId,
       nativeFiltersEnabled,
       filterBarOrientation,
       editMode,
@@ -656,6 +658,7 @@ const DashboardBuilder: FC<DashboardBuilderProps> = () => {
                     <ErrorBoundary>
                       {!isReport && (
                         <FilterBar
+                          focusedFilterId={focusedFilterId}
                           orientation={FilterBarOrientation.VERTICAL}
                           verticalConfig={{
                             filtersOpen: dashboardFiltersOpen,

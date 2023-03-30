@@ -222,6 +222,7 @@ const FilterControl = ({
   filter,
   icon,
   onFilterSelectionChange,
+  focusedFilterId,
   inView,
   showOverflow,
   parentRef,
@@ -287,6 +288,7 @@ const FilterControl = ({
           dataMaskSelected={dataMaskSelected}
           filter={filter}
           showOverflow={showOverflow}
+          focusedFilterId={focusedFilterId}
           onFilterSelectionChange={onFilterSelectionChange}
           inView={inView}
           parentRef={parentRef}

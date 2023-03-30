@@ -87,8 +87,7 @@ class ChartRenderer extends React.Component {
     this.state = {
       showContextMenu:
         props.source === ChartSource.Dashboard &&
-        (isFeatureEnabled(FeatureFlag.DRILL_TO_DETAIL) ||
-          isFeatureEnabled(FeatureFlag.DASHBOARD_CROSS_FILTERS)),
+        isFeatureEnabled(FeatureFlag.DRILL_TO_DETAIL),
       inContextMenu: false,
     };
     this.hasQueryResponseChange = false;

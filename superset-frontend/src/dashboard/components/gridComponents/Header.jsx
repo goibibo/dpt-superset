@@ -100,9 +100,9 @@ const HeaderStyles = styled.div`
     }
 
     /**
-   * grids add margin between items, so don't double pad within columns
-   * we'll not worry about double padding on top as it can serve as a visual separator
-   */
+    * grids add margin between items, so don't double pad within columns
+    * we'll not worry about double padding on top as it can serve as a visual separator
+    */
     .grid-column > :not(:last-child) & {
       margin-bottom: ${theme.gridUnit * -4}px;
     }

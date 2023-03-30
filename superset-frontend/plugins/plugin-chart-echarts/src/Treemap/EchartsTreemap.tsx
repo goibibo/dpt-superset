@@ -39,95 +39,74 @@ export default function EchartsTreemap({
   selectedValues,
   width,
 }: TreemapTransformedProps) {
-  const getCrossFilterDataMask = useCallback(
-    (data, treePathInfo) => {
-      if (data?.children) {
-        return undefined;
-      }
-      const { treePath } = extractTreePathInfo(treePathInfo);
-      const name = treePath.join(',');
-      const selected = Object.values(selectedValues);
-      let values: string[];
-      if (selected.includes(name)) {
-        values = selected.filter(v => v !== name);
-      } else {
-        values = [name];
-      }
-
-      const groupbyValues = values.map(value => labelMap[value]);
-
-      return {
-        dataMask: {
-          extraFormData: {
-            filters:
-              values.length === 0
-                ? []
-                : groupby.map((col, idx) => {
-                    const val: DataRecordValue[] = groupbyValues.map(
-                      v => v[idx],
-                    );
-                    if (val === null || val === undefined)
-                      return {
-                        col,
-                        op: 'IS NULL' as const,
-                      };
-                    return {
-                      col,
-                      op: 'IN' as const,
-                      val: val as (string | number | boolean)[],
-                    };
-                  }),
-          },
-          filterState: {
-            value: groupbyValues.length ? groupbyValues : null,
-            selectedValues: values.length ? values : null,
-          },
-        },
-        isCurrentValueSelected: selected.includes(name),
-      };
-    },
-    [groupby, labelMap, selectedValues],
-  );
-
   const handleChange = useCallback(
-    (data, treePathInfo) => {
+    (values: string[]) => {
       if (!emitCrossFilters) {
         return;
       }
 
-      const dataMask = getCrossFilterDataMask(data, treePathInfo)?.dataMask;
-      if (dataMask) {
-        setDataMask(dataMask);
-      }
+      const groupbyValues = values.map(value => labelMap[value]);
+
+      setDataMask({
+        extraFormData: {
+          filters:
+            values.length === 0
+              ? []
+              : groupby.map((col, idx) => {
+                  const val: DataRecordValue[] = groupbyValues.map(v => v[idx]);
+                  if (val === null || val === undefined)
+                    return {
+                      col,
+                      op: 'IS NULL',
+                    };
+                  return {
+                    col,
+                    op: 'IN',
+                    val: val as (string | number | boolean)[],
+                  };
+                }),
+        },
+        filterState: {
+          value: groupbyValues.length ? groupbyValues : null,
+          selectedValues: values.length ? values : null,
+        },
+      });
     },
-    [emitCrossFilters, getCrossFilterDataMask, setDataMask],
+    [groupby, labelMap, setDataMask, selectedValues],
   );
 
   const eventHandlers: EventHandlers = {
     click: props => {
       const { data, treePathInfo } = props;
-      handleChange(data, treePathInfo);
+      // do nothing when clicking on the parent node
+      if (data?.children) {
+        return;
+      }
+      const { treePath } = extractTreePathInfo(treePathInfo);
+      const name = treePath.join(',');
+      const values = Object.values(selectedValues);
+      if (values.includes(name)) {
+        handleChange(values.filter(v => v !== name));
+      } else {
+        handleChange([name]);
+      }
     },
     contextmenu: eventParams => {
       if (onContextMenu) {
         eventParams.event.stop();
-        const { data, treePathInfo } = eventParams;
-        const { treePath } = extractTreePathInfo(treePathInfo);
+        const { treePath } = extractTreePathInfo(eventParams.treePathInfo);
         if (treePath.length > 0) {
           const pointerEvent = eventParams.event.event;
-          const drillToDetailFilters: BinaryQueryObjectFilterClause[] = [];
+          const filters: BinaryQueryObjectFilterClause[] = [];
           treePath.forEach((path, i) =>
-            drillToDetailFilters.push({
+            filters.push({
               col: groupby[i],
               op: '==',
               val: path === 'null' ? NULL_STRING : path,
               formattedVal: path,
             }),
           );
-          onContextMenu(pointerEvent.clientX, pointerEvent.clientY, {
-            drillToDetail: drillToDetailFilters,
-            crossFilter: getCrossFilterDataMask(data, treePathInfo),
-          });
+          onContextMenu(pointerEvent.clientX, pointerEvent.clientY, filters);
         }
       }
     },

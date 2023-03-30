@@ -511,9 +511,9 @@ const AsyncSelect = forwardRef(
           suffixIcon={getSuffixIcon(isLoading, showSearch, isDropdownVisible)}
           menuItemSelectedIcon={
             invertSelection ? (
-              <StyledStopOutlined iconSize="m" aria-label="stop" />
+              <StyledStopOutlined iconSize="m" />
             ) : (
-              <StyledCheckOutlined iconSize="m" aria-label="check" />
+              <StyledCheckOutlined iconSize="m" />
             )
           }
           oneLine={oneLine}

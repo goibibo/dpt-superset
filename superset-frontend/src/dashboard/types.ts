@@ -102,6 +102,7 @@ export type DashboardInfo = {
   json_metadata: string;
   metadata: {
     native_filter_configuration: JsonObject;
+    show_native_filters: boolean;
     chart_configuration: JsonObject;
     color_scheme: string;
     color_namespace: string;

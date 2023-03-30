@@ -23,16 +23,12 @@ import {
   getColumnLabel,
   getMetricLabel,
   isDefined,
+  isEqualArray,
   QueryFormColumn,
   QueryFormMetric,
   t,
 } from '@superset-ui/core';
-import {
-  ControlPanelState,
-  ControlState,
-  ControlStateMapping,
-  isDataset,
-} from '../types';
+import { ControlPanelState, ControlState, ControlStateMapping } from '../types';
 import { isTemporalColumn } from '../utils';
 
 export const contributionModeControl = {
@@ -63,42 +59,39 @@ export const xAxisSortControl = {
   name: 'x_axis_sort',
   config: {
     type: 'XAxisSortControl',
-    label: (state: ControlPanelState) =>
-      state.form_data?.orientation === 'horizontal'
-        ? t('Y-Axis Sort By')
-        : t('X-Axis Sort By'),
-    description: t('Decides which column to sort the base axis by.'),
-    shouldMapStateToProps: () => true,
-    mapStateToProps: (state: ControlPanelState, controlState: ControlState) => {
-      const { controls, datasource } = state;
-      const dataset = isDataset(datasource) ? datasource : undefined;
-      const columns = [controls?.x_axis?.value as QueryFormColumn].filter(
-        Boolean,
-      );
-      const metrics = [
-        ...ensureIsArray(controls?.metrics?.value as QueryFormMetric),
-        controls?.timeseries_limit_metric?.value as QueryFormMetric,
-      ].filter(Boolean);
-      const options = [
-        ...columns.map(column => {
-          const value = getColumnLabel(column);
-          return {
-            value,
-            label: dataset?.verbose_map?.[value] || value,
-          };
-        }),
-        ...metrics.map(metric => {
-          const value = getMetricLabel(metric);
-          return {
-            value,
-            label: dataset?.verbose_map?.[value] || value,
-          };
-        }),
+    label: t('X-Axis Sort By'),
+    description: t('Whether to sort descending or ascending on the X-Axis.'),
+    shouldMapStateToProps: (
+      prevState: ControlPanelState,
+      state: ControlPanelState,
+    ) => {
+      const prevOptions = [
+        getColumnLabel(prevState?.controls?.x_axis?.value as QueryFormColumn),
+        ...ensureIsArray(prevState?.controls?.metrics?.value).map(metric =>
+          getMetricLabel(metric as QueryFormMetric),
+        ),
       ];
-
+      const currOptions = [
+        getColumnLabel(state?.controls?.x_axis?.value as QueryFormColumn),
+        ...ensureIsArray(state?.controls?.metrics?.value).map(metric =>
+          getMetricLabel(metric as QueryFormMetric),
+        ),
+      ];
+      return !isEqualArray(prevOptions, currOptions);
+    },
+    mapStateToProps: (
+      { controls }: { controls: ControlStateMapping },
+      controlState: ControlState,
+    ) => {
+      const choices = [
+        getColumnLabel(controls?.x_axis?.value as QueryFormColumn),
+        ...ensureIsArray(controls?.metrics?.value).map(metric =>
+          getMetricLabel(metric as QueryFormMetric),
+        ),
+      ].filter(Boolean);
       const shouldReset = !(
         typeof controlState.value === 'string' &&
-        options.map(option => option.value).includes(controlState.value) &&
+        choices.includes(controlState.value) &&
         !isTemporalColumn(
           getColumnLabel(controls?.x_axis?.value as QueryFormColumn),
           controls?.datasource?.datasource,
@@ -107,7 +100,10 @@ export const xAxisSortControl = {
 
       return {
         shouldReset,
-        options,
+        options: choices.map(entry => ({
+          value: entry,
+          label: entry,
+        })),
       };
     },
     visibility: xAxisSortVisibility,
@@ -118,12 +114,9 @@ export const xAxisSortAscControl = {
   name: 'x_axis_sort_asc',
   config: {
     type: 'CheckboxControl',
-    label: (state: ControlPanelState) =>
-      state.form_data?.orientation === 'horizontal'
-        ? t('Y-Axis Sort Ascending')
-        : t('X-Axis Sort Ascending'),
+    label: t('X-Axis Sort Ascending'),
     default: true,
-    description: t('Whether to sort ascending or descending on the base Axis.'),
+    description: t('Whether to sort descending or ascending on the X-Axis.'),
     visibility: xAxisSortVisibility,
   },
 };
